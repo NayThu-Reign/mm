@@ -12,6 +12,7 @@ import {
     FormControl,
     InputLabel,
     Grid,
+    Tooltip,
     
 } from "@mui/material"
 
@@ -19,12 +20,62 @@ import {
     Search as SearchIcon,
 } from "@mui/icons-material"
 
+import 'react-quill/dist/quill.snow.css'; 
+
+import ReactQuill from 'react-quill';
+// import { Tooltip } from '@mui/material';
+import { styled } from '@mui/system';
+
 import { useAuth } from "../providers/AuthProvider"
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 
 export default function Login() {
+
+    const [value, setValue] = useState('');
+    const tooltips = {
+        '.ql-bold': 'Bold',
+        '.ql-italic': 'Italic',
+        '.ql-underline': 'Underline',
+        '.ql-list.ql-bullet': 'Unordered List',
+        '.ql-list.ql-ordered': 'Ordered List',
+        '.ql-header': 'Header',
+        '.ql-link': 'Insert Link',
+        '.ql-image': 'Insert Image',
+        '.ql-blockquote': 'Blockquote',
+        '.ql-code-block': 'Code Block',
+        '.ql-clean': 'Remove Formatting'
+    };
+
+    const modules = {
+        toolbar: [
+            // [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['bold', 'italic', 'underline'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'align': [] }],
+            ['link', 'image'],
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            [{ 'blockquote': true }, { 'code-block': true }],
+            ['clean'], // remove formatting button
+        ],
+    }
+
+    const formats = [
+        'header', 'font', 'list', 'bullet',
+        'bold', 'italic', 'underline',
+        'color', 'background',
+        'align', 'link', 'image',
+        'blockquote', 'code-block',
+    ];
+
+    const EditorWrapper = styled('div')({
+        '& .ql-toolbar .ql-formats button': {
+            position: 'relative',
+        },
+    });
+
     const emailRef = useRef();
 	const passwordRef = useRef();
     const [category, setCategory] = useState("");
@@ -38,6 +89,21 @@ export default function Login() {
     const handleCategoryChange = (event) => {
         setCategory(event.target.value);
       };
+
+
+
+      useEffect(() => {
+        const toolbarButtons = document.querySelectorAll('.ql-toolbar .ql-formats button');
+        toolbarButtons.forEach(button => {
+            const tooltipText = tooltips[`.${button.classList[1]}`];
+            if (tooltipText) {
+                button.setAttribute('title', tooltipText);
+            }
+        });
+    }, []);
+
+      
+
 
     return (
         <Box>
@@ -77,6 +143,9 @@ export default function Login() {
                                             <SearchIcon />
                                         </IconButton>
                                     </Box>
+                                    
+                                        
+
                                         <TextField
                                             // fullWidth
                                             fullWidth
@@ -193,7 +262,7 @@ export default function Login() {
                                             sx={{ mb: 2 }}
                                             inputRef={passwordRef}
                                         />
-                                         <Grid container alignItems="center" sx={{ mb: 2 }}>
+                                         {/* <Grid container alignItems="center" sx={{ mb: 2 }}>
                                             <InputLabel id="category-label" sx={{ marginRight: 1 }}>Category</InputLabel>
                                             <FormControl fullWidth>
                                             <Select
@@ -206,7 +275,31 @@ export default function Login() {
                                                 <MenuItem value={30}>Category 3</MenuItem>
                                             </Select>
                                             </FormControl>
-                                        </Grid>
+                                        </Grid> */}
+
+                                        <EditorWrapper>
+                                            <ReactQuill 
+                                                value={value} 
+                                                onChange={setValue} 
+                                                formats={formats}
+                                                modules={modules}
+                                                placeholder="Write your message..."
+                                                style={{ height: '200px', marginBottom: '20px' }}
+                                            />
+
+                                        </EditorWrapper>
+
+                                    
+
+                                        {/* <TextField
+
+                                            label="Message"
+                                            fullWidth
+                                            multiline
+                                            row={8}
+                                            type="text"
+                                            
+                                        /> */}
                                         <Button
                                             type="submit"
                                             variant="contained"

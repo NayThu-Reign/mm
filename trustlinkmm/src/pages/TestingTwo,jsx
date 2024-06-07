@@ -1,0 +1,91 @@
+import React, { useState } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { Tooltip } from '@mui/material';
+import { styled } from '@mui/system';
+
+const CustomToolbar = () => (
+    <div id="toolbar">
+        <Tooltip title="Bold">
+            <button className="ql-bold"></button>
+        </Tooltip>
+        <Tooltip title="Italic">
+            <button className="ql-italic"></button>
+        </Tooltip>
+        <Tooltip title="Underline">
+            <button className="ql-underline"></button>
+        </Tooltip>
+        <Tooltip title="Ordered List">
+            <button className="ql-list" value="ordered"></button>
+        </Tooltip>
+        <Tooltip title="Unordered List">
+            <button className="ql-list" value="bullet"></button>
+        </Tooltip>
+        <Tooltip title="Header">
+            <select className="ql-header">
+                <option value="1"></option>
+                <option value="2"></option>
+                <option value="3"></option>
+                <option value="4"></option>
+                <option value="5"></option>
+                <option value="6"></option>
+                <option selected></option>
+            </select>
+        </Tooltip>
+        <Tooltip title="Insert Link">
+            <button className="ql-link"></button>
+        </Tooltip>
+        <Tooltip title="Insert Image">
+            <button className="ql-image"></button>
+        </Tooltip>
+        <Tooltip title="Blockquote">
+            <button className="ql-blockquote"></button>
+        </Tooltip>
+        <Tooltip title="Code Block">
+            <button className="ql-code-block"></button>
+        </Tooltip>
+        <Tooltip title="Remove Formatting">
+            <button className="ql-clean"></button>
+        </Tooltip>
+    </div>
+);
+
+const modules = {
+    toolbar: {
+        container: "#toolbar",
+    },
+};
+
+const formats = [
+    'header', 'font', 'list', 'bullet',
+    'bold', 'italic', 'underline',
+    'color', 'background',
+    'align', 'link', 'image',
+    'blockquote', 'code-block',
+];
+
+const EditorWrapper = styled('div')({
+    '& .ql-toolbar .ql-formats button': {
+        position: 'relative',
+    },
+});
+
+const MyComponent = () => {
+    const [value, setValue] = useState('');
+
+    return (
+        <EditorWrapper>
+            <CustomToolbar />
+            <ReactQuill
+                value={value}
+                onChange={setValue}
+                formats={formats}
+                modules={modules}
+                placeholder="Write your message..."
+                style={{ height: '200px', marginBottom: '20px' }}
+            />
+        </EditorWrapper>
+    );
+};
+
+export default MyComponent;

@@ -5,6 +5,8 @@ import Login from './pages/Login'
 // import Home from './pages/Home'
 import Layout from './Layout'
 import ForgotPassword from './pages/ForgotPassword'
+import Register from './pages/Register'
+import CustomizedTable from './pages/CustomizedTable'
 
 const router = createBrowserRouter([
   {
@@ -14,6 +16,14 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Login />
+      },
+      {
+        path: "/table",
+        element: <CustomizedTable />
+      },
+      {
+        path: "/register",
+        element: <Register />
       },
       {
         path: "/forgot-password",
