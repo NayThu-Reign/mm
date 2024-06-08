@@ -1,0 +1,121 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Layout from "./Layout";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Likes from "./pages/Likes";
+import Profile from "./pages/Profile";
+import Notis from "./pages/Notis";
+import Post from "./pages/Post";
+import AddPost from "./pages/AddPost";
+import Search from "./pages/Search";
+import Followers from "./pages/Followers";
+import Following from "./pages/Following";
+import EditProfile from "./pages/EditProfile";
+import AuthProvider from "./AuthProvider";
+import ProtectedRoute from "./ProtectedRoute";
+
+const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <Layout />,
+        children: [
+            {
+                path: "/",
+                element: (
+                    <ProtectedRoute>
+                        <Home />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/posts/:id",
+                element: (
+                    <ProtectedRoute>
+                        <Post />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/login",
+                element: <Login />,
+            },
+            {
+                path: "/register",
+                element: <Register />,
+            },
+            {
+                path: "/likes/:id",
+                element: (
+                    <ProtectedRoute>
+                        <Likes />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/profile/:id",
+                element: (
+                    <ProtectedRoute>
+                        <Profile />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/notis",
+                element: (
+                    <ProtectedRoute>
+                        <Notis />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/new",
+                element: (
+                    <ProtectedRoute>
+                        <AddPost />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/search",
+                element: (
+                    <ProtectedRoute>
+                        <Search />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/followers/:id",
+                element: (
+                    <ProtectedRoute>
+                        <Followers />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/following/:id",
+                element: (
+                    <ProtectedRoute>
+                        <Following />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/edit",
+                element: (
+                    <ProtectedRoute>
+                        <EditProfile />
+                    </ProtectedRoute>
+                ),
+            },
+        ],
+    },
+]);
+
+export default function App() {
+    return (
+        <AuthProvider>
+            <RouterProvider router={router} />
+        </AuthProvider>
+    );
+}

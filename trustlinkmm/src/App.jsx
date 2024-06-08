@@ -7,6 +7,10 @@ import Layout from './Layout'
 import ForgotPassword from './pages/ForgotPassword'
 import Register from './pages/Register'
 import CustomizedTable from './pages/CustomizedTable'
+import ViewTickets from './pages/ViewTickets'
+import Profile from './pages/Profile'
+import UpdateProfile from './pages/UpdateProfile'
+import ChangePassword from './pages/ChangePassword'
 
 const router = createBrowserRouter([
   {
@@ -28,7 +32,30 @@ const router = createBrowserRouter([
       {
         path: "/forgot-password",
         element: <ForgotPassword />
-      }
+      },
+      {
+        path: "/view-tickets",
+        element: <ViewTickets />
+      },
+      // {
+      //   path: "/client/profile",
+      //   element: <Profile />,
+      //   children: [
+      //     // {
+      //     //   path: "/client/",
+      //     //   element: <Profile />
+      //     // },
+      //     {
+      //       path: "/client/update-profile",
+      //       element: <UpdateProfile />
+      //     },
+      //     {
+      //       path: "/client/change-password",
+      //       element: <ChangePassword />
+      //     },
+
+      //   ]
+      // }
     ]
   }
 ])

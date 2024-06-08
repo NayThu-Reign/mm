@@ -34,6 +34,7 @@ import { Link, useNavigate } from "react-router-dom";
 export default function Login() {
 
     const [value, setValue] = useState('');
+    const ignoreWarningRef = useRef(false);
     const tooltips = {
         '.ql-bold': 'Bold',
         '.ql-italic': 'Italic',
@@ -92,15 +93,26 @@ export default function Login() {
 
 
 
+      const editorRef = useRef();
+
       useEffect(() => {
-        const toolbarButtons = document.querySelectorAll('.ql-toolbar .ql-formats button');
-        toolbarButtons.forEach(button => {
-            const tooltipText = tooltips[`.${button.classList[1]}`];
-            if (tooltipText) {
-                button.setAttribute('title', tooltipText);
-            }
-        });
-    }, []);
+          const toolbarButtons = document.querySelectorAll('.ql-toolbar .ql-formats button');
+          toolbarButtons.forEach(button => {
+              const tooltipText = tooltips[`.${button.classList[1]}`];
+              if (tooltipText) {
+                  button.setAttribute('title', tooltipText);
+              }
+          });
+          ignoreWarningRef.current = true;
+      }, []);
+
+      useEffect(() => {
+        // Ignore the warning if the flag is set to true
+        if (ignoreWarningRef.current) {
+            console.warn = () => {};
+        }
+    }, [ignoreWarningRef.current]);
+
 
       
 
@@ -277,17 +289,18 @@ export default function Login() {
                                             </FormControl>
                                         </Grid> */}
 
-                                        <EditorWrapper>
+                                        <Box>
                                             <ReactQuill 
                                                 value={value} 
                                                 onChange={setValue} 
+                                                ref={editorRef}
                                                 formats={formats}
                                                 modules={modules}
                                                 placeholder="Write your message..."
                                                 style={{ height: '200px', marginBottom: '20px' }}
                                             />
 
-                                        </EditorWrapper>
+                                        </Box>
 
                                     
 
