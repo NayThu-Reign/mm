@@ -706,7 +706,9 @@ export default function ViewTickets() {
                                      gap: "20px",
                                      marginBottom: "20px",
                                  }}>
-                                     <Button sx={{
+                                     <Button
+                                        
+                                     sx={{
                                          width: "50px",
                                          height: "30px",
                                          background: "#f2f4f8",
@@ -714,7 +716,11 @@ export default function ViewTickets() {
                                      }}>
                                          Clear
                                      </Button>
-                                     <Button sx={{
+                                     <Button
+                                     
+                                     type="submit"
+                                     
+                                     sx={{
                                          width: "50px",
                                          height: "30px",
                                          background: "green",
@@ -725,7 +731,7 @@ export default function ViewTickets() {
                                          }
                                         
                                      }}>
-                                         Clear
+                                         Search
                                      </Button>
      
                                     

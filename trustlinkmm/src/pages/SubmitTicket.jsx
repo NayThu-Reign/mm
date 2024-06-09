@@ -12,39 +12,16 @@ import {
     FormControl,
     InputLabel,
     Grid,
-    Menu,
-    ListItemIcon,
-	ListItemText,
-
-    // MenuItem,
-    // Alert,
 } from "@mui/material"
 
 import {
     Search as SearchIcon,
-    ArrowDropDown as ArrowDropDownIcon,
-    Refresh as RefreshIcon,
-	Delete as DeleteIcon,
-
 } from "@mui/icons-material"
 
 import { Link, useNavigate } from "react-router-dom"
 import { useRef, useState } from "react";
 
-const generateRandomCaptcha = () => {
-    // This should be replaced with a real CAPTCHA generation logic
-    const randomString = Math.random().toString(36).substring(2, 8);
-    return `https://via.placeholder.com/150x50?text=${randomString}`;
-};
-
-export default function Register() {
-
-    const [captchaImage, setCaptchaImage] = useState(generateRandomCaptcha());
-
-    const handleRefreshClick = () => {
-        setCaptchaImage(generateRandomCaptcha());
-    };
-
+export default function SubmitTicket() {
 	const navigate = useNavigate();
 
     const firstNameRef = useRef();
@@ -59,48 +36,23 @@ export default function Register() {
     const [hasError, setHasError] = useState(false);
 	const [errorMsessage, setErrorMessage] = useState("");
 
+    const [ departmentCategories, setDepartmentCategories ] = useState(10);
+    const [ ticketCategories, setTicketCategories ] = useState(10);
+    const [ priorityCategories, setPriorityCategories ] = useState(10);
 
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [sortBy, setSortBy] = useState('Sort By');
+	// const { setAuth, setAuthUser } = useAuth();
 
-
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
+    const handleDepartmentCategoriesChange = (event) => {
+        setDepartmentCategories(event.target.value);
     };
 
-    const handleClose = () => {
-        setAnchorEl(null);
+    const handlePriorityCategoriesChange = (event) => {
+        setPriorityCategories(event.target.value);
     };
 
-    const handleMenuItemClick = (option) => {
-        setSortBy(option);
-        setAnchorEl(null);
+    const handleTicketCategoriesChange = (event) => {
+        setTicketCategories(event.target.value);
     };
-
-    const menuOptions = ['Option 1', 'Option 2', 'Option 3'];
-
-    const [showMenu, setShowMenu] = useState(false);
-	const [menuPosition, setMenuPosition] = useState(null);
-
-
-
-
-    // const [imageURL, setImageURL] = useState(generateRandomImageURL());
-
-    // // Function to generate a random image URL
-    // function generateRandomImageURL() {
-    //     // Replace this with your logic to generate a random image URL
-    //     return `https://source.unsplash.com/random/200x100?verify=${Math.random()}`;
-    // }
-
-    // // Function to handle refresh icon click
-    // function handleRefreshClick() {
-    //     // Generate a new random image URL and update the state
-    //     setImageURL(generateRandomImageURL());
-    // }
-
-
-   
 
 
     return (
@@ -146,14 +98,14 @@ export default function Register() {
                                     fontSize: "35px",
                                     color: "#788288",
                                     
-                                }}>Register</Typography>
+                                }}>Submit ticket</Typography>
                                 <Typography sx={{ color: "#788288" }}>
                                     <Link to="/" style={{ textDecoration: "none" }}>
                                         <Typography component="span" sx={{ color: "#3097d2" }}>
                                             Home 
                                         </Typography>
                                     </Link>
-                                     / Register
+                                     / Submit ticket
                                 </Typography>
                             </Box>
 
@@ -255,153 +207,6 @@ export default function Register() {
                                 width: "100%",
                                 // border: "1px solid"
                             }}>
-                                <Button
-                                    variant="contained"
-                                    endIcon={<ArrowDropDownIcon />}
-                                    onClick={e => {
-                                        setShowMenu(true);
-                                        setMenuPosition(e.currentTarget)
-                                    }}
-                                    sx={{
-                                        mb: 2,
-                                        backgroundColor: "#74b683",
-                                        '&:hover': {
-                                            backgroundColor: "#74b683",
-                                        },
-                                    }}
-                                >
-                                    {sortBy}
-                                </Button>
-                                <Menu
-                                    anchorEl={menuPosition}
-                                    open={showMenu}
-                                    
-                                    anchorOrigin={{
-                                        vertical: "bottom",
-                                        horizontal: "right",
-                                    }}
-                                    transformOrigin={{
-                                        vertical: "top",
-                                        horizontal: "right",
-                                    }}
-                                    onClose={() => {
-                                        setShowMenu(false);
-                                    
-                                    
-                                    }}
-                                    
-                                    slotProps={{
-                                        paper: {
-                                            sx: {
-                                                maxHeight: 200,
-                                                width: "200px",
-                                                overflow: "auto",
-                                            },
-                                        }
-                                    }}
-                                
-                                
-                                >
-                                
-                                <MenuItem
-									onClick={() => {
-										const api = import.meta.env
-											.VITE_API_URL;
-										fetch(`${api}/posts/${post._id}`, {
-											method: "DELETE",
-										});
-
-										remove(post._id);
-									}}
-
-                                    sx={{
-                                        height: 50,
-                                        marginBottom: "20px",
-                                    }}
-                                    
-                                    
-                                >
-									<ListItemIcon>
-										<DeleteIcon color="error" />
-									</ListItemIcon>
-									<ListItemText primary="Delete" />
-								</MenuItem>
-                                <MenuItem
-									onClick={() => {
-										const api = import.meta.env
-											.VITE_API_URL;
-										fetch(`${api}/posts/${post._id}`, {
-											method: "DELETE",
-										});
-
-										remove(post._id);
-									}}>
-									<ListItemIcon>
-										<DeleteIcon color="error" />
-									</ListItemIcon>
-									<ListItemText primary="Delete" />
-								</MenuItem>
-                                <MenuItem
-									onClick={() => {
-										const api = import.meta.env
-											.VITE_API_URL;
-										fetch(`${api}/posts/${post._id}`, {
-											method: "DELETE",
-										});
-
-										remove(post._id);
-									}}>
-									<ListItemIcon>
-										<DeleteIcon color="error" />
-									</ListItemIcon>
-									<ListItemText primary="Delete" />
-								</MenuItem>
-                                <MenuItem
-									onClick={() => {
-										const api = import.meta.env
-											.VITE_API_URL;
-										fetch(`${api}/posts/${post._id}`, {
-											method: "DELETE",
-										});
-
-										remove(post._id);
-									}}>
-									<ListItemIcon>
-										<DeleteIcon color="error" />
-									</ListItemIcon>
-									<ListItemText primary="Delete" />
-								</MenuItem>
-                                <MenuItem
-									onClick={() => {
-										const api = import.meta.env
-											.VITE_API_URL;
-										fetch(`${api}/posts/${post._id}`, {
-											method: "DELETE",
-										});
-
-										remove(post._id);
-									}}>
-									<ListItemIcon>
-										<DeleteIcon color="error" />
-									</ListItemIcon>
-									<ListItemText primary="Delete" />
-								</MenuItem>
-                                <MenuItem
-									onClick={() => {
-										const api = import.meta.env
-											.VITE_API_URL;
-										fetch(`${api}/posts/${post._id}`, {
-											method: "DELETE",
-										});
-
-										remove(post._id);
-									}}>
-									<ListItemIcon>
-										<DeleteIcon color="error" />
-									</ListItemIcon>
-									<ListItemText primary="Delete" />
-								</MenuItem>
-                                </Menu>
                                 <form
                                      onSubmit={e => {
                                         e.preventDefault();
@@ -420,6 +225,33 @@ export default function Register() {
                                             return false;
                                         }
 
+
+                                        async() => {
+                                            try {
+                                                const response = await fetch("http://localhost:3000/api/tickets", {
+                                                  method: "POST",
+                                                  headers: {
+                                                    "Content-Type": "application/json",
+                                                  },
+                                                  body: JSON.stringify({ title, description, category }),
+                                                });
+                                          
+                                                const result = await response.json();
+                                          
+                                                if (response.ok) {
+                                                  setSuccess("Ticket submitted successfully!");
+                                                  setTitle("");
+                                                  setDescription("");
+                                                  setCategory("");
+                                                  navigate("/")
+                                                } else {
+                                                  setError(result.message || "An error occurred");
+                                                }
+                                              } catch (error) {
+                                                setError("An error occurred while submitting the ticket");
+                                              }
+                                        }
+
                                 
                                 }}>
 
@@ -430,6 +262,21 @@ export default function Register() {
                                             {errorMsessage}
                                         </Alert>
                                     )}
+
+                                        {/* <Grid container alignItems="center" sx={{ mb: 2 }}>
+                                            <InputLabel id="category-label" sx={{ marginRight: 1 }}>Category</InputLabel>
+                                            <FormControl fullWidth>
+                                            <Select
+                                                labelId="category-label"
+                                                value={category}
+                                                onChange={handleCategoryChange}
+                                            >
+                                                <MenuItem value={10}>Category 1</MenuItem>
+                                                <MenuItem value={20}>Category 2</MenuItem>
+                                                <MenuItem value={30}>Category 3</MenuItem>
+                                            </Select>
+                                            </FormControl>
+                                        </Grid> */}
                                     
                                     <Box sx={{
                                         display: "flex",
@@ -439,21 +286,87 @@ export default function Register() {
                                         gap: "20px",
                                         marginBottom: "10px",
                                         marginLeft: "30px",
+                                        // border: "1px solid",
+                                        "@media (max-width: 750px)" : {
+                                            display: "block",
+                                            // flexDirection: "column",
+                                            // justifyContent: "flex-start",
+
+
+                                        }
                                     }}>
                                         <Box sx={{
                                             width: "150px",
                                             display: "flex",
                                             justifyContent: "flex-end",
                                             // border: "1px solid",
+                                            "@media (max-width: 750px)" : {
+                                                justifyContent: "flex-start",
+                                            }
+                                            // border: "1px solid",
+                                        }}>                                           
+                                            <label style={{ color: "#808080", fontSize: "15px" }}>Department</label>
+                                        </Box>
+                                        <Box sx={{ 
+                                            width: "750px",  
+                                            "@media (max-width: 750px)" : {
+                                                width: "100%",
+                                            }
+                                        }}>
+                                        <FormControl variant="outlined" sx={{ minWidth: 120 }}>
+  <InputLabel>Department</InputLabel>
+  <Select
+    value={selectedDepartment}
+    onChange={handleDepartmentChange}
+    label="Department"
+  >
+    {selectedDepartment === '' && <MenuItem value="">IT (Placeholder)</MenuItem>}
+    {departments.map(department => (
+      <MenuItem key={department.id} value={department.name}>{department.name}</MenuItem>
+    ))}
+  </Select>
+</FormControl>
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{
+                                        display: "flex",
+                                        // justifyContent: "center",
+                                        alignItems: "center",
+                                        // border: "1px solid",
+                                        gap: "20px",
+                                        marginBottom: "10px",
+                                        marginLeft: "30px",
+                                        // border: "1px solid",
+                                        "@media (max-width: 750px)" : {
+                                            display: "block",
+                                            // flexDirection: "column",
+                                            // justifyContent: "flex-start",
+
+
+                                        }
+                                    }}>
+                                        <Box sx={{
+                                            width: "150px",
+                                            display: "flex",
+                                            justifyContent: "flex-end",
+                                            // border: "1px solid",
+                                            "@media (max-width: 750px)" : {
+                                                justifyContent: "flex-start",
+                                            }
                                         }}>                                           
                                             <label style={{ color: "#808080", fontSize: "15px" }}>First Name</label>
                                         </Box>
-                                        <Box>
+                                        <Box sx={{ 
+                                            width: "750px",
+                                            "@media (max-width: 750px)" : {
+                                                width: "100%",
+                                            }    
+                                        }}>
                                             <TextField
                                                 // label="Email"
-                                                // fullWidth
+                                                fullWidth
                                                 sx={{ 
-                                                    width: "750px",
+                                                    // width: "750px",
                                                     // height: "100%",
                                                     // mb: 2,
                                                     // border: "1px solid",
@@ -478,6 +391,14 @@ export default function Register() {
                                         gap: "20px",
                                         marginBottom: "10px",
                                         marginLeft: "30px",
+                                        // border: "1px solid",
+                                        "@media (max-width: 750px)" : {
+                                            display: "block",
+                                            // flexDirection: "column",
+                                            // justifyContent: "flex-start",
+
+
+                                        }
 
                                     }}>
                                         <Box sx={{
@@ -485,15 +406,24 @@ export default function Register() {
                                             display: "flex",
                                             justifyContent: "flex-end",
                                             // border: "1px solid",
+                                            "@media (max-width: 750px)" : {
+                                                justifyContent: "flex-start",
+                                            }
                                         }}>                                           
                                             <label style={{ color: "#808080", fontSize: "15px" }}>Last Name</label>
                                         </Box>
-                                        <Box>
+                                        <Box sx={{ 
+                                            width: "750px",
+                                            "@media (max-width: 750px)" : {
+                                                width: "100%",
+                                            } 
+                                            
+                                        }}>
                                             <TextField
                                                 // label="Email"
-                                                // fullWidth
+                                                fullWidth
                                                 sx={{ 
-                                                    width: "750px",
+                                                    // width: "750px",
                                                     // height: "100%",
                                                     // mb: 2,
                                                     // border: "1px solid",
@@ -518,6 +448,14 @@ export default function Register() {
                                         gap: "20px",
                                         marginBottom: "10px",
                                         marginLeft: "30px",
+                                        // border: "1px solid",
+                                        "@media (max-width: 750px)" : {
+                                            display: "block",
+                                            // flexDirection: "column",
+                                            // justifyContent: "flex-start",
+
+
+                                        }
 
                                     }}>
                                         <Box sx={{
@@ -525,15 +463,24 @@ export default function Register() {
                                             display: "flex",
                                             justifyContent: "flex-end",
                                             // border: "1px solid",
+                                            "@media (max-width: 750px)" : {
+                                                justifyContent: "flex-start",
+                                            }
                                         }}>                                           
                                             <label style={{ color: "#808080", fontSize: "15px" }}>Email</label>
                                         </Box>
-                                        <Box>
+                                        <Box sx={{ 
+                                            width: "750px",
+                                            "@media (max-width: 750px)" : {
+                                                width: "100%",
+                                            },
+                                             
+                                        }}>
                                             <TextField
                                                 // label="Email"
-                                                // fullWidth
+                                                fullWidth
                                                 sx={{ 
-                                                    width: "750px",
+                                                    // width: "750px",
                                                     // height: "100%",
                                                     // mb: 2,
                                                     // border: "1px solid",
@@ -558,22 +505,138 @@ export default function Register() {
                                         gap: "20px",
                                         marginBottom: "10px",
                                         marginLeft: "30px",
+                                        // border: "1px solid",
+                                        "@media (max-width: 750px)" : {
+                                            display: "block",
+                                            // flexDirection: "column",
+                                            // justifyContent: "flex-start",
 
+
+                                        }
                                     }}>
                                         <Box sx={{
                                             width: "150px",
                                             display: "flex",
                                             justifyContent: "flex-end",
+                                            "@media (max-width: 750px)" : {
+                                                justifyContent: "flex-start",
+                                            }
                                             // border: "1px solid",
                                         }}>                                           
-                                            <label style={{ color: "#808080", fontSize: "15px" }}>User Name</label>
+                                            <label style={{ color: "#808080", fontSize: "15px" }}>Priority</label>
                                         </Box>
-                                        <Box>
+                                        <Box sx={{ 
+                                            width: "750px", 
+                                            "@media (max-width: 750px)" : {
+                                                width: "100%",
+                                            }
+                                            
+                                        }}>
+                                        <FormControl fullWidth>
+                                            <Select
+                                                labelId="category-label"
+                                                value={ priorityCategories }
+                                                onChange={handlePriorityCategoriesChange}
+                                            >
+                                                <MenuItem value={10}>Critical</MenuItem>
+                                                <MenuItem value={20}>Moderate</MenuItem>
+                                                <MenuItem value={30}>Low</MenuItem>
+                                                <MenuItem value={30}>Medium</MenuItem>
+                                            </Select>
+                                            </FormControl>
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{
+                                        display: "flex",
+                                        // justifyContent: "center",
+                                        alignItems: "center",
+                                        // border: "1px solid",
+                                        gap: "20px",
+                                        marginBottom: "10px",
+                                        marginLeft: "30px",
+                                        // border: "1px solid",
+                                        "@media (max-width: 750px)" : {
+                                            display: "block",
+                                            // flexDirection: "column",
+                                            // justifyContent: "flex-start",
+
+
+                                        }
+                                    }}>
+                                        <Box sx={{
+                                            width: "150px",
+                                            display: "flex",
+                                            justifyContent: "flex-end",
+                                            // border: "1px solid",
+                                            "@media (max-width: 750px)" : {
+                                                justifyContent: "flex-start",
+                                            }
+                                        }}>                                           
+                                            <label style={{ color: "#808080", fontSize: "15px" }}>Ticket category</label>
+                                        </Box>
+                                        <Box sx={{ 
+                                            width: "750px",
+                                            "@media (max-width: 750px)" : {
+                                                width: "100%",
+                                            } 
+                                            
+                                        }}>
+                                        <FormControl fullWidth>
+                                            <Select
+                                                labelId="category-label"
+                                                value={ ticketCategories }
+                                                onChange={handleTicketCategoriesChange}
+                                            >
+                                                <MenuItem value={10}>Select</MenuItem>
+                                                <MenuItem value={20}>PC</MenuItem>
+                                                <MenuItem value={30}>Power Supply</MenuItem>
+                                                <MenuItem value={40}>Touch Screen</MenuItem>
+                                                <MenuItem value={50}>HDD</MenuItem>
+                                            </Select>
+                                            </FormControl>
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{
+                                        display: "flex",
+                                        // justifyContent: "center",
+                                        alignItems: "center",
+                                        // border: "1px solid",
+                                        gap: "20px",
+                                        marginBottom: "10px",
+                                        marginLeft: "30px",
+                                        // border: "1px solid",
+                                        "@media (max-width: 750px)" : {
+                                            display: "block",
+                                            // flexDirection: "column",
+                                            // justifyContent: "flex-start",
+
+
+                                        }
+
+                                    }}>
+                                        <Box sx={{
+                                            width: "150px",
+                                            display: "flex",
+                                            justifyContent: "flex-end",
+                                            // border: "1px solid",
+                                            "@media (max-width: 750px)" : {
+                                                justifyContent: "flex-start",
+                                            }
+                                        }}>                                           
+                                            <label style={{ color: "#808080", fontSize: "15px" }}>Subject</label>
+                                        </Box>
+                                        <Box sx={{ 
+                                            width: "750px", 
+                                            "@media (max-width: 750px)" : {
+                                                width: "100%",
+                                            }
+                                            
+                                        }}>
                                             <TextField
                                                 // label="Email"
-                                                // fullWidth
+                                                fullWidth
                                                 sx={{ 
-                                                    width: "750px",
+                                                    // width: "750px",
                                                     // height: "100%",
                                                     // mb: 2,
                                                     // border: "1px solid",
@@ -598,6 +661,14 @@ export default function Register() {
                                         gap: "20px",
                                         marginBottom: "10px",
                                         marginLeft: "30px",
+                                        // border: "1px solid",
+                                        "@media (max-width: 750px)" : {
+                                            display: "block",
+                                            // flexDirection: "column",
+                                            // justifyContent: "flex-start",
+
+
+                                        }
 
                                     }}>
                                         <Box sx={{
@@ -605,16 +676,27 @@ export default function Register() {
                                             display: "flex",
                                             justifyContent: "flex-end",
                                             // border: "1px solid",
+                                            "@media (max-width: 750px)" : {
+                                                justifyContent: "flex-start",
+                                            }
                                         }}>                                           
                                             <label style={{ color: "#808080", fontSize: "15px" }}>Password</label>
                                         </Box>
-                                        <Box>
+                                        <Box sx={{ 
+                                            width: "750px", 
+                                            "@media (max-width: 750px)" : {
+                                                width: "100%",
+                                            }
+                                            
+                                        }}>
                                             <TextField
                                                 // label="Email"
-                                                // fullWidth
+                                                fullWidth
+                                                multiline
+                                                rows={6}
                                                 sx={{ 
-                                                    width: "750px",
-                                                    // height: "100%",
+                                                    // width: "750px",
+                                                    // height: "500%",
                                                     // mb: 2,
                                                     // border: "1px solid",
                                                     display: "flex",
@@ -638,6 +720,14 @@ export default function Register() {
                                         gap: "20px",
                                         marginBottom: "10px",
                                         marginLeft: "30px",
+                                        // border: "1px solid",
+                                        "@media (max-width: 750px)" : {
+                                            display: "block",
+                                            // flexDirection: "column",
+                                            // justifyContent: "flex-start",
+
+
+                                        }
 
                                     }}>
                                         <Box sx={{
@@ -645,15 +735,24 @@ export default function Register() {
                                             display: "flex",
                                             justifyContent: "flex-end",
                                             // border: "1px solid",
+                                            "@media (max-width: 750px)" : {
+                                                justifyContent: "flex-start",
+                                            }
                                         }}>                                           
-                                            <label style={{ color: "#808080", fontSize: "15px" }}>Confirm Password</label>
+                                            <label style={{ color: "#808080", fontSize: "15px" }}>Image Verification</label>
                                         </Box>
-                                        <Box>
+                                        <Box sx={{ 
+                                            width: "750px", 
+                                            "@media (max-width: 750px)" : {
+                                                width: "100%",
+                                            }
+                                            
+                                        }}>
                                             <TextField
                                                 // label="Email"
-                                                // fullWidth
+                                                fullWidth
                                                 sx={{ 
-                                                    width: "750px",
+                                                    // width: "750px",
                                                     // height: "100%",
                                                     // mb: 2,
                                                     // border: "1px solid",
@@ -670,181 +769,24 @@ export default function Register() {
                                             />
                                         </Box>
                                     </Box>
-                                    <Box sx={{
-                                        display: "flex",
-                                        // justifyContent: "center",
-                                        alignItems: "center",
-                                        // border: "1px solid",
-                                        gap: "20px",
-                                        marginBottom: "10px",
-                                        marginLeft: "30px",
-
-                                    }}>
-                                        <Box sx={{
-                                            width: "150px",
-                                            display: "flex",
-                                            justifyContent: "flex-end",
-                                            // border: "1px solid",
-                                        }}>                                           
-                                            <label style={{ color: "#808080", fontSize: "15px" }}>Contact Number</label>
-                                        </Box>
-                                        <Box>
-                                            <TextField
-                                                // label="Email"
-                                                // fullWidth
-                                                sx={{ 
-                                                    width: "750px",
-                                                    // height: "100%",
-                                                    // mb: 2,
-                                                    // border: "1px solid",
-                                                    display: "flex",
-                                                    
-                                                    backgroundColor: 'white',
-                                                    '& .MuiOutlinedInput-root': {
-                                                        '&.Mui-focused fieldset': {
-                                                        borderColor: "black",
-                                                        },
-                                                    },
-                                                }}
-                                                inputRef={emailRef}
-                                            />
-                                        </Box>
-                                    </Box>
-                                    {/* <Box sx={{
-                                        display: "flex",
-                                        // justifyContent: "center",
-                                        alignItems: "center",
-                                        // border: "1px solid",
-                                        gap: "20px",
-                                        marginBottom: "10px",
-                                        marginLeft: "30px",
-
-                                    }}>
-                                        <Box sx={{
-                                            width: "150px",
-                                            display: "flex",
-                                            justifyContent: "flex-end",
-                                            // border: "1px solid",
-                                        }}>                                           
-                                            <label style={{ color: "#808080", fontSize: "15px" }}>Image Verification</label>
-                                        </Box>
-                                        <Box>
-                                            <TextField
-                                                // label="Email"
-                                                // fullWidth
-                                                sx={{ 
-                                                    width: "750px",
-                                                    // height: "100%",
-                                                    // mb: 2,
-                                                    // border: "1px solid",
-                                                    display: "flex",
-                                                    border: "1px solid",
-                                                    
-                                                    backgroundColor: 'white',
-                                                    '& .MuiOutlinedInput-root': {
-                                                        '&.Mui-focused fieldset': {
-                                                        borderColor: "black",
-                                                        },
-                                                    },
-                                                    '& .MuiInputBase-input': {
-                                                            height: '20px', // Adjust the height here
-                                                            padding: '8px', // Adjust the padding to make it vertically centered
-                                                        },
-                                                    
-                                                }}
-                                                inputRef={emailRef}
-                                            />
-                                        </Box>
-                                    </Box> */}
-
-
-
-
-                                    {/* <Box sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "20px",
-                                        marginBottom: "10px",
-                                        marginLeft: "30px",
-                                    }}>
-                                        <Box sx={{
-                                            width: "150px",
-                                            display: "flex",
-                                            justifyContent: "flex-end",
-                                        }}>                                           
-                                            <label style={{ color: "#808080", fontSize: "15px" }}>Image Verification</label>
-                                        </Box>
-                                        <Box>
-                                            <TextField
-                                                sx={{ 
-                                                    width: "450px",
-                                                    display: "flex",
-                                                    border: "1px solid",
-                                                    backgroundColor: 'white',
-                                                    '& .MuiOutlinedInput-root': {
-                                                        '&.Mui-focused fieldset': {
-                                                            borderColor: "black",
-                                                        },
-                                                    },
-                                                }}
-                                                value={imageURL}
-                                                InputProps={{
-                                                    endAdornment: (
-                                                        <IconButton onClick={handleRefreshClick}>
-                                                            <RefreshIcon />
-                                                        </IconButton>
-                                                    ),
-                                                }}
-                                            />
-                                        </Box>
-                                    </Box> */}
-
-            <Box sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: "20px",
-                marginBottom: "10px",
-                marginLeft: "30px",
-            }}>
-                <Box sx={{
-                    width: "150px",
-                    display: "flex",
-                    justifyContent: "flex-end",
-                }}>                                           
-                    <label style={{ color: "#808080", fontSize: "15px" }}>Image Verification</label>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <img src={captchaImage} alt="captcha" style={{ marginRight: '10px', background: "green" }} />
-                    <IconButton onClick={handleRefreshClick}>
-                        <RefreshIcon />
-                    </IconButton>
-                </Box>
-                <Box>
-                    <TextField
-                        sx={{ 
-                            width: "750px",
-                            display: "flex",
-                            backgroundColor: 'white',
-                            '& .MuiOutlinedInput-root': {
-                                '&.Mui-focused fieldset': {
-                                    borderColor: "black",
-                                },
-                            },
-                        }}
-                        inputRef={imageVerificationRef}
-                    />
-                </Box>
-            </Box>
 
                                     <Box sx={{
                                         marginLeft: "180px",
                                         marginTop: "20px",
                                         width: "90px",
+                                        "@media (max-width: 750px)" : {
+                                            marginLeft: 0,
+                                            width: "100%",
+                                            // border: "1px solid",
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                        }
                                     }}>
                                         <Button
                                             type="submit"
                                             variant="contained"
-                                            fullWidth
+                                            // fullWidth
                                             sx={{
                                                 height: "45px",
                                                 background: "#74b683",
@@ -853,7 +795,10 @@ export default function Register() {
                                                 '&:hover': {
                                                     backgroundColor: "#74b683", 
                                                     
-                                                  },
+                                                },
+                                                "@media (max-width: 750px)" : {
+                                                    width: "100px",
+                                                }
                                             }}    
                                             
                                         >

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
+// import Login from './pages/Login'
 import Login from './pages/Login'
 
 // import Home from './pages/Home'
@@ -11,6 +12,8 @@ import ViewTickets from './pages/ViewTickets'
 import Profile from './pages/Profile'
 import UpdateProfile from './pages/UpdateProfile'
 import ChangePassword from './pages/ChangePassword'
+import ProtectedRoute from './providers/ProtectedRoute'
+import SubmitTicket from './pages/SubmitTicket'
 
 const router = createBrowserRouter([
   {
@@ -22,8 +25,20 @@ const router = createBrowserRouter([
         element: <Login />
       },
       {
+        path: "/view-tickets",
+        element: (
+          <ProtectedRoute>
+            <ViewTickets />
+          </ProtectedRoute>
+        )
+      },
+      {
         path: "/table",
         element: <CustomizedTable />
+      },
+      {
+        path: "/submit-tickets",
+        element: <SubmitTicket />
       },
       {
         path: "/register",
@@ -33,10 +48,10 @@ const router = createBrowserRouter([
         path: "/forgot-password",
         element: <ForgotPassword />
       },
-      {
-        path: "/view-tickets",
-        element: <ViewTickets />
-      },
+      // {
+      //   path: "/view-tickets",
+      //   element: <ViewTickets />
+      // },
       // {
       //   path: "/client/profile",
       //   element: <Profile />,

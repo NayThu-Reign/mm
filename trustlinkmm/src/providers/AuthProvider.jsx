@@ -1,34 +1,35 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext();
 
-export function useAuth() {
-    return useContext(AuthContext);
-} 
+
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
 
 export default function AuthProvider({ children }) {
-    const [auth, setAuth] = useState(false);
-    const [authUser, setAuthUser] = useState({});
+  const [auth, setAuth] = useState({
+    isAuthenticated: false,
+    token: null,
+    user: null,
+  });
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        (async () => {
-            const api = import.meta.env.VITE_API_URL;
-            const res = await fetch(`${api}/verify`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setAuth({
+        isAuthenticated: true,
+        token,
+        user: JSON.parse(localStorage.getItem('user')),
+      });
+    }
+  }, []);
 
-            if(res.ok) {
-                const user = await res.json();
-                setAuth(true);
-                setAuthUser(user);
-            }
-        })();
-    }, []);
 
-    return <AuthContext.Provider value={{ auth, setAuth, authUser, setAuthUser }}>
-        {children}
+
+  return (
+    <AuthContext.Provider value={{ auth, setAuth }}>
+      {children}
     </AuthContext.Provider>
-}
+  );
+};

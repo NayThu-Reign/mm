@@ -20,62 +20,64 @@ import {
     Search as SearchIcon,
 } from "@mui/icons-material"
 
-import 'react-quill/dist/quill.snow.css'; 
+// import 'react-quill/dist/quill.snow.css'; 
 
-import ReactQuill from 'react-quill';
-// import { Tooltip } from '@mui/material';
-import { styled } from '@mui/system';
+// import ReactQuill from 'react-quill';
+// // import { Tooltip } from '@mui/material';
+// import { styled } from '@mui/system';
 
-import { useAuth } from "../providers/AuthProvider"
+// import { Slate, Editable, withReact } from 'slate-react';
+
+// import { Editor, EditorState } from 'draft-js';
+// import 'draft-js/dist/Draft.css';
+
+// import { useAuth } from "../providers/AuthProvider"
 import { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+// if (typeof global === 'undefined') {
+//     window.global = window;
+//   }
+
+
+import { useAuth } from "../providers/AuthProvider";
+
+import { Slate, Editable, withReact } from 'slate-react';
+import { createEditor } from 'slate';
+
+import { useMemo } from "react";
+
+const initialValue = [
+    {
+      type: 'paragraph',
+      children: [{ text: 'A line of text in a paragraph.' }],
+    },
+  ];
+
+
+  import FroalaEditor from 'react-froala-wysiwyg';
+import 'froala-editor/js/plugins.pkgd.min.js';
+import 'froala-editor/css/froala_editor.pkgd.min.css';
+import 'froala-editor/css/froala_style.min.css';
+import 'froala-editor/css/plugins.pkgd.min.css';
+  
 
 export default function Login() {
 
-    const [value, setValue] = useState('');
-    const ignoreWarningRef = useRef(false);
-    const tooltips = {
-        '.ql-bold': 'Bold',
-        '.ql-italic': 'Italic',
-        '.ql-underline': 'Underline',
-        '.ql-list.ql-bullet': 'Unordered List',
-        '.ql-list.ql-ordered': 'Ordered List',
-        '.ql-header': 'Header',
-        '.ql-link': 'Insert Link',
-        '.ql-image': 'Insert Image',
-        '.ql-blockquote': 'Blockquote',
-        '.ql-code-block': 'Code Block',
-        '.ql-clean': 'Remove Formatting'
-    };
+    const [editorContent, setEditorContent] = useState('');
 
-    const modules = {
-        toolbar: [
-            // [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-            ['bold', 'italic', 'underline'],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'align': [] }],
-            ['link', 'image'],
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            [{ 'blockquote': true }, { 'code-block': true }],
-            ['clean'], // remove formatting button
-        ],
-    }
 
-    const formats = [
-        'header', 'font', 'list', 'bullet',
-        'bold', 'italic', 'underline',
-        'color', 'background',
-        'align', 'link', 'image',
-        'blockquote', 'code-block',
-    ];
+    const [content, setContent] = useState('');
 
-    const EditorWrapper = styled('div')({
-        '& .ql-toolbar .ql-formats button': {
-            position: 'relative',
-        },
-    });
+    const {auth, setAuth } = useAuth();
+
+  const handleModelChange = (newContent) => {
+    setContent(newContent);
+  };
+
+    const editor = useMemo(() => withReact(createEditor()), []);
+    const [value, setValue] = useState(initialValue);
+
 
     const emailRef = useRef();
 	const passwordRef = useRef();
@@ -95,23 +97,23 @@ export default function Login() {
 
       const editorRef = useRef();
 
-      useEffect(() => {
-          const toolbarButtons = document.querySelectorAll('.ql-toolbar .ql-formats button');
-          toolbarButtons.forEach(button => {
-              const tooltipText = tooltips[`.${button.classList[1]}`];
-              if (tooltipText) {
-                  button.setAttribute('title', tooltipText);
-              }
-          });
-          ignoreWarningRef.current = true;
-      }, []);
+    //   useEffect(() => {
+    //       const toolbarButtons = document.querySelectorAll('.ql-toolbar .ql-formats button');
+    //       toolbarButtons.forEach(button => {
+    //           const tooltipText = tooltips[`.${button.classList[1]}`];
+    //           if (tooltipText) {
+    //               button.setAttribute('title', tooltipText);
+    //           }
+    //       });
+    //       ignoreWarningRef.current = true;
+    //   }, []);
 
-      useEffect(() => {
-        // Ignore the warning if the flag is set to true
-        if (ignoreWarningRef.current) {
-            console.warn = () => {};
-        }
-    }, [ignoreWarningRef.current]);
+    //   useEffect(() => {
+    //     // Ignore the warning if the flag is set to true
+    //     if (ignoreWarningRef.current) {
+    //         console.warn = () => {};
+    //     }
+    // }, [ignoreWarningRef.current]);
 
 
       
@@ -252,6 +254,40 @@ export default function Login() {
                                             // 			navigate("/");
                                             // 		});
                                             // })();
+
+
+                                            async (email, password) => {
+                                                try {
+                                                  const response = await fetch('http://localhost:3000/login', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                      'Content-Type': 'application/json',
+                                                    },
+                                                    body: JSON.stringify({ email, password }),
+                                                  });
+                                            
+                                                  const data = await response.json();
+                                                  if (response.ok) {
+                                                    localStorage.setItem('token', data.token);
+                                                    const user = { email }; // Add more user details as needed
+                                                    localStorage.setItem('user', JSON.stringify(user));
+                                            
+                                                    setAuth({
+                                                      isAuthenticated: true,
+                                                      token: data.token,
+                                                      user,
+                                                    });
+                                            
+                                                    navigate('/view-tickets');
+                                                  } else {
+                                                    setHasError(true);
+                                                    setErrorMessage(data.message || 'Invalid login details');
+                                                  }
+                                                } catch (error) {
+                                                  setHasError(true);
+                                                  setErrorMessage('An error occurred during login');
+                                                }
+                                              };
                                         }}>
                                         {hasError && (
                                             <Alert
@@ -289,7 +325,7 @@ export default function Login() {
                                             </FormControl>
                                         </Grid> */}
 
-                                        <Box>
+                                        {/* <Box>
                                             <ReactQuill 
                                                 value={value} 
                                                 onChange={setValue} 
@@ -300,7 +336,41 @@ export default function Login() {
                                                 style={{ height: '200px', marginBottom: '20px' }}
                                             />
 
-                                        </Box>
+                                        </Box> */}
+
+                                        {/* <Editor
+                                            editorState={editorState}
+                                            onChange={setEditorState}
+                                        /> */}
+
+                                        {/* <Slate editor={editor} value={value} onChange={newValue => setValue(newValue)}>
+                                        <Editable />
+                                        </Slate> */}
+
+
+                                <FroalaEditor
+                                    tag='textarea'
+                                    config={{
+                                        placeholderText: 'Write your message...',
+                                        charCounterCount: false,
+                                        toolbarButtons: [
+                                            'bold', 'italic', 'underline', 'strikeThrough', 
+                                            'insertLink', 'insertImage', 'formatOL', 'formatUL', 
+                                            'quote', 'html', 'paragraphFormat', 'fontSize'],
+                                        paragraphFormat: {
+                                            N: 'Normal',
+                                            H1: 'Heading 1',
+                                            H2: 'Heading 2',
+                                            H3: 'Heading 3',
+                                            H4: 'Heading 4',
+                                            H5: 'Heading 5',
+                                            H6: 'Heading 6'
+                                        },
+                                        fontSize: ['8', '10', '12', '14', '16', '18', '20', '24', '30', '36', '48', '60', '72']
+                                    }}
+                                    model={editorContent}
+                                    onModelChange={setEditorContent}
+                                />
 
                                     
 
