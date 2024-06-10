@@ -1,69 +1,59 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import jwtDecode from "jwt-decode";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
-export function useAuth() {
-    return useContext(AuthContext);
-}
+export const AuthProvider = ({ children }) => {
+    const [authUser, setAuthUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
-export default function AuthProvider({ children }) {
-    const [auth, setAuth] = useState(false);
-    const [authUser, setAuthUser] = useState({});
-    const [loading, setLoading] = useState(true); // To handle the loading state
+    const login = async (userCred, password) => {
+        try {
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userCred, password }),
+            });
+
+            const data = await res.json();
+
+            if (data.status === 200) {
+                setAuthUser(data.currentUser);
+                localStorage.setItem('token', data.currentUser.token);
+                localStorage.setItem('user', JSON.stringify(data.currentUser));
+                navigate('/dashboard');
+            } else {
+                throw new Error(data.message || 'Login failed');
+            }
+        } catch (err) {
+            throw err;
+        }
+    };
+
+    const logout = () => {
+        setAuthUser(null);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/login');
+    };
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            try {
-                const decodedToken = jwtDecode(token);
-                const userId = decodedToken.id; // assuming the token contains the user ID in the `id` field
-
-                (async () => {
-                    try {
-                        const api = import.meta.env.VITE_API_URL;
-                        const res = await fetch(`${api}/api/users/${userId}`, {
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
-                        });
-
-                        if (!res.ok) {
-                            throw new Error("Failed to fetch user");
-                        }
-
-                        const user = await res.json();
-                        setAuth(true);
-                        setAuthUser(user);
-                    } catch (error) {
-                        console.error("Failed to fetch user data", error);
-                        setAuth(false);
-                        setAuthUser({});
-                    } finally {
-                        setLoading(false);
-                    }
-                })();
-            } catch (error) {
-                console.error("Invalid token or failed to decode token", error);
-                localStorage.removeItem("token");
-                setAuth(false);
-                setAuthUser({});
-                setLoading(false);
-            }
-        } else {
-            setAuth(false);
-            setAuthUser({});
-            setLoading(false);
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (token && user) {
+            setAuthUser(user);
         }
+        setLoading(false);
     }, []);
 
-    if (loading) {
-        return <div>Loading...</div>; // Optionally, you can show a loading spinner
-    }
-
     return (
-        <AuthContext.Provider value={{ auth, setAuth, authUser, setAuthUser }}>
+        <AuthContext.Provider value={{ authUser, login, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );
-}
+};
+
+export const useAuth = () => useContext(AuthContext);

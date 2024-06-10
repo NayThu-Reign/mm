@@ -14,6 +14,7 @@ import UpdateProfile from './pages/UpdateProfile'
 import ChangePassword from './pages/ChangePassword'
 import ProtectedRoute from './providers/ProtectedRoute'
 import SubmitTicket from './pages/SubmitTicket'
+import TicketDetail from './pages/TicketDetail'
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,12 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <ViewTickets />
           </ProtectedRoute>
+        )
+      },
+      {
+        path: "/tickets/detail/:id",
+        element: (
+          <TicketDetail />
         )
       },
       {
