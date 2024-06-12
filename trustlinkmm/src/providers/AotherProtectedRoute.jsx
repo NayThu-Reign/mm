@@ -9,6 +9,7 @@ const ProtectedRoute = ({ children }) => {
 
   if (!authUser) return <Navigate to="/login" />;
 
+  console.log('Authenticated user found:', authUser);
   return children;
 };
 

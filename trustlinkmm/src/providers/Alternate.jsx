@@ -43,8 +43,12 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user'));
+        console.log('Retrieved token from localStorage:', token);
+        console.log('Retrieved user from localStorage:', user);
         if (token && user) {
             setAuthUser(user);
+        } else {
+            console.log('No valid token or user found in localStorage');
         }
         setLoading(false);
     }, []);
