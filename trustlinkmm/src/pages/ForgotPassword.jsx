@@ -1,226 +1,115 @@
-import {
-    Box,
-    Container,
-    Typography,
-    TextField, 
-    InputAdornment,
-    IconButton,
-    Button,
-} from "@mui/material"
+import React, { useState } from 'react';
+import { TextField, Button, Typography, Box, Alert } from '@mui/material';
 
-import {
-    Search as SearchIcon,
-} from "@mui/icons-material"
+const ForgotPassword = () => {
+    const [userCred, setUserCred] = useState('');
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [resendEnabled, setResendEnabled] = useState(false);
 
-import { useAuth } from "../providers/AuthProvider"
-import { useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage('');
+        setError('');
+        setResendEnabled(false);
 
+        try {
+            const response = await fetch('/api/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userCred })
+            });
 
-export default function ForgotPassword() {
-    const emailRef = useRef();
-	// const passwordRef = useRef();
+            const data = await response.json();
 
-	// const { setAuth, setAuthUser } = useAuth();
-	const navigate = useNavigate();
+            if (response.status === 200) {
+                setMessage(data.message);
+                setResendEnabled(true); // Enable resend button after successful email
+            } else {
+                setError(data.error.message);
+            }
+        } catch (error) {
+            setError('Failed to send reset email. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-	const [hasError, setHasError] = useState(false);
-	const [errorMsessage, setErrorMessage] = useState("");
+    const handleResend = async () => {
+        setLoading(true);
+        setMessage('');
+        setError('');
+
+        try {
+            const response = await fetch('/api/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userCred })
+            });
+
+            const data = await response.json();
+
+            if (response.status === 200) {
+                setMessage(data.message);
+            } else {
+                setError(data.error.message);
+            }
+        } catch (error) {
+            setError('Failed to resend reset email. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
-        <Box>
-            <Box sx={{
-                width: "100%",
-                height: "200px",
-                background: "#f2f4f8",
-            }}>
-                <Box sx={{ height: "100%"}}>
-                    <Container maxWidth="lg" sx={{ height: "100%"}}>
-                        <Box sx={{
-                             display: "flex",
-                             justifyContent: "space-between",
-                             alignItems: "center",
-                             height: "100%",
-                            //  border: "1px solid"
-                        }}>
-                            <Box>
-                                <Typography sx={{ marginBottom: "12px"}}>Forgot Password</Typography>
-                                <Typography>
-                                    <Link>
-                                        <Typography component="span">
-                                            Home 
-                                        </Typography>
-                                    </Link>
-                                     / Forgot Password
-                                </Typography>
-                            </Box>
-
-                            <Box sx={{ width: "40%",}}>
-                                <Box sx={{
-                                    width: "100%",
-                                    // border: "1px solid red"
-                                }}>
-                                    <Box sx={{ 
-                                        width: "100%", 
-                                        // border: "1px solid", 
-                                    
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        background: "#ffffff",
-                                    }}>
-                                        <Box>
-                                            <IconButton>
-                                                <SearchIcon />
-                                            </IconButton>
-                                        </Box>
-                                            <TextField
-                                                // fullWidth
-                                                fullWidth
-                                                variant="outlined"
-                                                placeholder="Search"
-                                                // InputProps={{
-                                                //     startAdornment: (
-                                                //     <InputAdornment position="start">
-                                                //         <SearchIcon />
-                                                //     </InputAdornment>
-                                                //     ),
-                                                // }}
-                                                sx={{ 
-                                                    backgroundColor: 'white',
-                                                    '& .MuiOutlinedInput-root': {
-                                                        '& fieldset': {
-                                                            borderColor: 'transparent', // Border color when not focused
-                                                        },
-                                                        '&:hover fieldset': {
-                                                            borderColor: 'transparent', // Border color on hover when not focused
-                                                        },
-                                                        '&.Mui-focused fieldset': {
-                                                        borderColor: "#74b683",
-                                                        },
-                                                    },
-                                                
-                                                }}
-                                            />
-                                        
-                                    </Box>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Container>
-                </Box>
-
-                
-            </Box>
-            <Box sx={{ marginTop: "60px", marginBottom: "130px" }}>
-				<Box>
-                    <Container maxWidth="lg">
-                           <Box sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                // border: "1px solid",
-                           }}>
-                                <Box sx={{
-                                    width: "400px",
-
-                                }}>
-                                    <form
-                                            onSubmit={e => {
-                                            e.preventDefault();
-                                            const email = emailRef.current.value;
-
-                                            if (!email) {
-                                                setHasError(true);
-                                                setErrorMessage("Invalid login details");
-                                                return false;
-                                            }
-
-                                            // (async () => {
-                                            // 	const api = import.meta.env.VITE_API_URL;
-                                            // 	const res = await fetch(`${api}/login`, {
-                                            // 		method: "POST",
-                                            // 		body: JSON.stringify({ handle, password }),
-                                            // 		headers: {
-                                            // 			"Content-Type": "application/json",
-                                            // 		},
-                                            // 	});
-
-                                            // 	if (!res.ok) {
-                                            // 		// setErrorMessage( (await res.json()).msg );
-                                            // 		setErrorMessage("incorrect handle or password");
-                                            // 		setHasError(true);
-                                            // 		return false;
-                                            // 	}
-
-                                            // 	const data = await res.json();
-                                            // 	localStorage.setItem("token", data.token);
-
-                                            // 	fetch(`${api}/verify`, {
-                                            // 		headers: {
-                                            // 			Authorization: `Bearer ${data.token}`,
-                                            // 		},
-                                            // 	})
-                                            // 		.then(res => res.json())
-                                            // 		.then(user => {
-                                            // 			setAuth(true);
-                                            // 			setAuthUser(user);
-                                            // 			navigate("/");
-                                            // 		});
-                                            // })();
-                                        }}>
-                                        {hasError && (
-                                            <Alert
-                                                severity="warning"
-                                                sx={{ mb: 4 }}>
-                                                {errorMsessage}
-                                            </Alert>
-                                        )}
-
-                                        <TextField
-                                            label="Email"
-                                            fullWidth
-                                            sx={{ mb: 2 }}
-                                            inputRef={emailRef}
-                                        />
-                                        
-                                        <Button
-                                            type="submit"
-                                            variant="contained"
-                                            fullWidth
-                                            sx={{
-                                                height: "40px",
-                                                background: "#74b683",
-                                                textTransform: 'none',
-                                                '&:hover': {
-                                                    backgroundColor: "#74b683", 
-                                                    
-                                                  },
-                                            }}    
-                                            
-                                        >
-                                            Send
-                                        </Button>
-
-                                        <Box sx={{ marginTop: "20px"}}>
-                                            <Link>
-                                                <Typography sx={{
-                                                    textAlign: "center"
-                                                }}>
-                                                    Back to login
-                                                </Typography>
-                                            </Link>
-                                        </Box>
-                                        </form>
-
-                                </Box>
-
-
-                           </Box>
-                    </Container>
-                </Box>
-			</Box>
+        <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ mt: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+        >
+            <Typography variant="h5" component="h1" gutterBottom>
+                Forgot Password
+            </Typography>
+            <TextField
+                label="Username or Email"
+                variant="outlined"
+                fullWidth
+                value={userCred}
+                onChange={(e) => setUserCred(e.target.value)}
+                required
+                sx={{ mb: 2 }}
+            />
+            <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                disabled={loading}
+            >
+                {loading ? 'Sending...' : 'Send Reset Email'}
+            </Button>
+            {message && <Alert severity="success" sx={{ mt: 2 }}>{message}</Alert>}
+            {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+            {resendEnabled && (
+                <Button
+                    onClick={handleResend}
+                    variant="outlined"
+                    color="secondary"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    disabled={loading}
+                >
+                    {loading ? 'Sending...' : 'Resend Email'}
+                </Button>
+            )}
         </Box>
-    )
-}
+    );
+};
+
+export default ForgotPassword;
