@@ -15,6 +15,7 @@ import ChangePassword from './pages/ChangePassword'
 import ProtectedRoute from './providers/ProtectedRoute'
 import SubmitTicket from './pages/SubmitTicket'
 import TicketDetail from './pages/TicketDetail'
+import StatusReport from './pages/StatusReport'
 
 const router = createBrowserRouter([
   {
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
       {
         path: "/forgot-password",
         element: <ForgotPassword />
+      },
+      {
+        path: "/work_report",
+        element: <StatusReport />
       },
       // {
       //   path: "/view-tickets",

@@ -160,25 +160,25 @@ export default function UpdateProfile() {
         formData.append("profile", file, fileName);
 
 
-        // const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token');
 
-        // const api = import.meta.env.VITE_API_URL;
+        const api = import.meta.env.VITE_API_URL;
 
-        // const upload_res = await fetch(`${api}/api/uploads/avatar`, {
-        //     method: 'POST',
-        //     body: formData,
-        //     headers: {
-        //       'Authorization': `Bearer ${token}`,
-        //     },
-        //   });
+        const upload_res = await fetch(`${api}/api/uploads/avatar`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
     
-        //   if (!upload_res.ok) {
-        //     throw new Error('Failed to upload photo');
-        //   }
+          if (!upload_res.ok) {
+            throw new Error('Failed to upload photo');
+          }
     
-        // //   const data = await upload_res.json();
-        //   console.log('File uploaded successfully:', data);
-        //   setPhoto(data.userAvatar);
+          const data = await upload_res.json();
+          console.log('File uploaded successfully:', data);
+          setAuthUser({...authUser, userAvatar: data.srcUrl})
         } 
         catch (error) {
           console.error('Error uploading photo:', error);
