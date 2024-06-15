@@ -732,7 +732,19 @@ export default function TicketDetail() {
                                                         H5: 'Heading 5',
                                                         H6: 'Heading 6'
                                     },
-                                    fontSize: ['8', '10', '12', '14', '16', '18', '20', '24', '30', '36', '48', '60', '72']
+                                    fontSize: ['8', '10', '12', '14', '16', '18', '20', '24', '30', '36', '48', '60', '72'],
+                                    fileUploadURL: 'http://localhost:3001/upload_file',
+                                            events: {
+                                            'file.uploaded': function (response) {
+                                                console.log('File uploaded:', response);
+                                            },
+                                            'file.inserted': function ($file, response) {
+                                                console.log('File inserted:', $file, response);
+                                            },
+                                            'file.error': function (error, response) {
+                                                console.log('File upload error:', error, response);
+                                            }
+                                            }
                             }}
                             model={editorContent}
                             onModelChange={setEditorContent}

@@ -16,6 +16,7 @@ import ProtectedRoute from './providers/ProtectedRoute'
 import SubmitTicket from './pages/SubmitTicket'
 import TicketDetail from './pages/TicketDetail'
 import StatusReport from './pages/StatusReport'
+import MainDropdown from './pages/MainDropdown'
 
 const router = createBrowserRouter([
   {
@@ -59,6 +60,11 @@ const router = createBrowserRouter([
       {
         path: "/work_report",
         element: <StatusReport />
+      },
+
+      {
+        path: "/drop-down",
+        element: <MainDropdown />
       },
       // {
       //   path: "/view-tickets",

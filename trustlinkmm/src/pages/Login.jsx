@@ -94,6 +94,20 @@ export default function Login() {
       };
 
 
+      const [selectedFiles, setSelectedFiles] = useState([]);
+
+      const handleFileUpload = (files) => {
+        const fileArray = Array.from(files);
+        setSelectedFiles([...selectedFiles, ...fileArray]);
+    
+        return new Promise((resolve) => {
+          const link = URL.createObjectURL(files[0]);
+          resolve({ link });
+        });
+      };
+
+
+     
 
       const editorRef = useRef();
 
@@ -355,7 +369,7 @@ export default function Login() {
                                         charCounterCount: false,
                                         toolbarButtons: [
                                             'bold', 'italic', 'underline', 'strikeThrough', 
-                                            'insertLink', 'insertImage', 'formatOL', 'formatUL', 
+                                            'insertLink', 'insertImage', 'insertFile','formatOL', 'formatUL', 
                                             'quote', 'html', 'paragraphFormat', 'fontSize'],
                                         paragraphFormat: {
                                             N: 'Normal',
@@ -366,7 +380,17 @@ export default function Login() {
                                             H5: 'Heading 5',
                                             H6: 'Heading 6'
                                         },
-                                        fontSize: ['8', '10', '12', '14', '16', '18', '20', '24', '30', '36', '48', '60', '72']
+                                        fontSize: ['8', '10', '12', '14', '16', '18', '20', '24', '30', '36', '48', '60', '72'],
+                                        events: {
+                                            'image.beforeUpload': function (files) {
+                                              handleFileUpload(files);
+                                              return false; // Stop default upload
+                                            },
+                                            'file.beforeUpload': function (files) {
+                                              handleFileUpload(files);
+                                              return false; // Stop default upload
+                                            }
+                                          }
                                     }}
                                     model={editorContent}
                                     onModelChange={setEditorContent}

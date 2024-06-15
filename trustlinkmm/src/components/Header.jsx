@@ -31,17 +31,19 @@ export default function Header() {
     //     setDepartmentCategories(event.target.value);
     // };
 
-    const { auth, setAuth } = useAuth();
-    // const photo = auth.photo
-
     const navigate = useNavigate();
 
-    const [showProfilMenu, setShowProfilMenu] = useState(false);
-    const [showLanguage, setShowLanguage] = useState(false);
-	const [menuPosition, setMenuPosition] = useState(null);
-
     const [showMenu, setShowMenu] = useState(false);
-	// const [menuPosition, setMenuPosition] = useState(null);
+    const [showLanguage, setShowLanguage] = useState(false);
+    const [showSecondChild, setShowSecondChild] = useState(false);
+    const [showFirstChild, setShowFirstChild] = useState(false);
+    const [showProfile, setShowProfile] = useState(false);
+	const [menuPosition, setMenuPosition] = useState(null);
+    const [LanguageMenuPosition, setLanguageMenuPosition] = useState(null);
+    const [ProfileMenuPosition, setProfileMenuPosition] = useState(null);
+
+    const { auth, setAuth, authUser, setAuthUser } = useAuth([]);
+
 
     return (
         <Box>
@@ -69,18 +71,10 @@ export default function Header() {
                 width: "100%",
                 height: "60px",
                 backgroundColor: "#74b683",
-                
-                
             }}>
                 <Box sx={{
                     width: "100%",
                     height: "100%",
-                    "@media(max-width: 950px)" : {
-                    display: "flex",
-                    alignItems: "center",
-                }
-                    
-                    
                     // border: "1px solid",
                 }}>
                 <Container maxWidth="lg"  >
@@ -88,26 +82,321 @@ export default function Header() {
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        // "@media(max-width: 950px)" : {
-                        // display: "flex",
-                        // // flexDirection: "column",
-                        // justifyContent: "flex-end",
-                        // alignItems: "center",
-
-                        // }
-                    }}>
-                        
-                        <Box sx={{
-                            width: "100%",
-                        display: "none",
-                        "@media(max-width: 950px)" : {
+                        "@media (max-width : 750px)" : {
                             display: "flex",
-                            // flexDirection: "column",
                             justifyContent: "flex-end",
-                            // border: "1px solid",
+                            alignItems: "center",
                         }
                     }}>
-                                <IconButton
+                       
+                        <Box sx={{
+                            display: "flex",
+                            // gap: "35px",
+                            height: "60px",
+                            "@media(max-width: 750px)" : {
+                                display: "none",
+                            }
+                           
+                        }}>
+                            <Box sx={{
+                                width: "120px",
+                                '&:hover': {
+                                    background: "#366d06",
+                                    color: "#ffffff",
+                                    fontWeight: 800,
+                                }, 
+                                
+                            }}>
+                                <Link to="/submit-ticket" style={{ 
+                                    textDecoration: "none", 
+                                    height: "100%", 
+                                    display: "flex", 
+                                    justifyContent: "center", 
+                                    alignItems: "center",
+                                }}>
+                                    <Typography sx={{
+                                        fontSize: "13px",
+                                        color: "#f5f5dc", 
+                                        '&:hover': {
+                                            color: "#ffffff",
+                                            fontWeight: 600,
+                                        }, 
+                                       
+                                    }}>
+                                        Submit ticket
+                                    </Typography>
+                                </Link>
+                            </Box>
+
+                            {!authUser && (
+                                <Box sx={{
+                                    width: "100px",
+                                    '&:hover': {
+                                        background: "#366d06",
+                                        color: "#ffffff",
+                                        fontWeight: 800,
+                                    }, 
+                                    
+                                }}>
+                                    <Link to="/login" style={{ 
+                                        textDecoration: "none", 
+                                        height: "100%", 
+                                        display: "flex", 
+                                        justifyContent: "center", 
+                                        alignItems: "center",
+                                    }}>
+                                        <Typography sx={{
+                                            fontSize: "13px",
+                                            color: "#f5f5dc", 
+                                            '&:hover': {
+                                                color: "#ffffff",
+                                                fontWeight: 600,
+                                            }, 
+                                           
+                                        }}>
+                                            Login
+                                        </Typography>
+                                    </Link>
+                                </Box>
+                            )}
+                            {authUser && (
+                                <Box sx={{
+                                    width: "100px",
+                                    '&:hover': {
+                                        background: "#366d06",
+                                        color: "#ffffff",
+                                        fontWeight: 800,
+                                    }, 
+                                    
+                                }}>
+                                    <Link to="/tickets/view-tickets" style={{ 
+                                        textDecoration: "none", 
+                                        height: "100%", 
+                                        display: "flex", 
+                                        justifyContent: "center", 
+                                        alignItems: "center",
+                                    }}>
+                                        <Typography sx={{
+                                            fontSize: "13px",
+                                            color: "#f5f5dc", 
+                                            '&:hover': {
+                                                color: "#ffffff",
+                                                fontWeight: 600,
+                                            }, 
+                                           
+                                        }}>
+                                            View Tickets
+                                        </Typography>
+                                    </Link>
+                                </Box>
+                            )}
+
+                            
+                        </Box>
+                     
+                             <Box 
+                             sx={{
+                                 display: "flex",
+                                 gap: "20px",
+                                 "@media(max-width: 750px)" : {
+                                    display: "none",
+                                 }
+                             }}
+                         >
+                            {authUser && (
+                                <Box>
+                                 <Button 
+                                     endIcon={<ArrowDropDownIcon />}
+                                     onClick={e => {
+                                         setShowProfile(true);
+                                         setMenuPosition(e.currentTarget)
+                                     }}
+                                     sx={{
+                                         textTransform: "none",
+                                         color: "#808080",
+                                         '&:hover': {
+                                             background: "#366d06",
+                                         }, 
+                                     
+                                     }}
+                                 >
+                                     <Avatar sx={{ 
+                                         width: 30,
+                                         height: 30,
+                                         marginRight: "10px",
+                                         background: "#366d06",
+                                         fontSize: "15px",
+                                     }}>
+                                         TA
+                                     </Avatar>
+                                     {authUser.username}
+                                 </Button>
+                                 <Menu
+                                     anchorEl={menuPosition}
+                                     open={showProfile}
+                                     
+                                     anchorOrigin={{
+                                         vertical: "bottom",
+                                         horizontal: "left",
+                                     }}
+                                     transformOrigin={{
+                                         vertical: "top",
+                                         horizontal: "right",
+                                     }}
+                                     onClose={() => {
+                                         setShowProfile(false);
+                                     
+                                     
+                                     }}
+                                     
+                                     slotProps={{
+                                         paper: {
+                                             sx: {
+                                                 maxHeight: 200,
+                                                 width: "200px",
+                                                 overflow: "auto",
+                                                 marginLeft: "90px",
+                                             },
+                                         }
+                                     }}
+                                 
+                                 
+                                 >
+                                 
+                                 <MenuItem
+                                     onClick={() => {
+                                        navigate(`/client`)
+                                     }}
+                                     
+                                 >
+                                     <ListItemText primary="Profile" />
+                                 </MenuItem>
+                                 <MenuItem
+                                     // onClick={() => {
+                                     // }}
+                                     
+                                     
+                                 >
+                                     <ListItemText primary="Contacts" />
+                                 </MenuItem>
+                                 <MenuItem
+                                     // onClick={() => {
+                                     // }}
+                                     
+                                     
+                                 >
+                                     <ListItemText primary="Report" />
+                                 </MenuItem>
+ 
+                                 <MenuItem
+                                     onClick={() => {
+ 
+                                        setAuthUser(null);
+                                        localStorage.removeItem('token');
+                                        localStorage.removeItem('user');
+                                        navigate('/login');
+                                     }}
+                                     
+                                     
+                                 >
+                                     <ListItemText primary="Logout" />
+                                 </MenuItem>
+                                 </Menu>
+                                </Box>
+                            )}
+                            
+                             <Box sx={{
+                                 '&:hover': {
+                                     background: "#588f27",
+                                 }, 
+                             }}>
+                                 <IconButton 
+                                     onClick={e => {
+                                         setShowLanguage(true);
+                                         setMenuPosition(e.currentTarget)
+                                     }}
+                                     sx={{
+                                         color: "#f5f5dc", 
+                                     
+                                     }}
+                                 >
+                                     <LanguageIcon />
+                                     <ArrowDropDownIcon />
+                                 </IconButton>
+ 
+                                 <Menu
+                                     anchorEl={menuPosition}
+                                     open={showLanguage}
+                                     
+                                     anchorOrigin={{
+                                         vertical: "bottom",
+                                         horizontal: "left",
+                                     }}
+                                     transformOrigin={{
+                                         vertical: "top",
+                                         horizontal: "right",
+                                     }}
+                                     onClose={() => {
+                                         setShowLanguage(false);
+                                     
+                                     
+                                     }}
+                                     
+                                     slotProps={{
+                                         paper: {
+                                             sx: {
+                                                 maxHeight: 200,
+                                                 width: "200px",
+                                                 overflow: "auto",
+                                                 marginLeft: "90px",
+                                             },
+                                         }
+                                     }}
+                                 
+                                 
+                                 >
+                                 
+                                 <MenuItem
+                                     // onClick={() => {
+                                     // 	const api = import.meta.env
+                                     // 		.VITE_API_URL;
+                                     // 	fetch(`${api}/posts/${post._id}`, {
+                                     // 		method: "DELETE",
+                                     // 	});
+ 
+                                     // 	remove(post._id);
+                                     // }}
+                                     
+                                 >
+                                     <ListItemText primary="English" />
+                                 </MenuItem>
+                                 <MenuItem
+                                     // onClick={() => {
+                                     // }}
+                                     
+                                     
+                                 >
+                                     <ListItemText primary="Myanmar3" />
+                                 </MenuItem>
+                                 </Menu>
+                                 
+                             </Box>
+                            </Box>
+
+                            <Box sx={{
+                             width: "100%",
+                             display: "none",
+                             "@media(max-width: 950px)" : {
+                                 display: "flex",
+
+                                 // flexDirection: "column",
+                                 justifyContent: "flex-end",
+                                 paddingTop: "10px",
+                                //  alignItems: "center",
+                                 // border: "1px solid",
+                             }
+                        }}>
+                            <IconButton
                                     onClick={e => {
                                         setShowMenu(true);
                                         setMenuPosition(e.currentTarget);
@@ -116,8 +405,9 @@ export default function Header() {
                                     // sx={{ marginRight: "20px"}}
                                     >
                                     <MenuIcon />
-                                </IconButton>
-                                <Menu
+                            </IconButton>
+
+                            <Menu
                                     anchorEl={menuPosition}
                                     open={showMenu}
                                     // getContentAnchorEl={null}
@@ -142,7 +432,7 @@ export default function Header() {
                                         paper: {
                                             sx: {
                                                 // position: 'fixed',
-                                                width: '100vw',  // Full viewport width
+                                                width: '100%',  // Full viewport width
                                                 maxWidth: '100vw',  // Ensure it doesn't exceed viewport width
                                                 // maxHeight: 'calc(100vh - 50px)', // Adjusted to fit all items without scroll
                                                 maxHeight: 'none', // Disable max height
@@ -151,7 +441,12 @@ export default function Header() {
                                                 // top: '100%',  // Adjust as necessary to align under the icon
                                                 margin: '0',
                                                 borderRadius: '0',  // Remove border radius for full width effect
-                                                background: "green",
+                                                backgroundColor: "#74b683",
+                                                color: "#ffffff",
+                                                paddingLeft: "30px",
+                                                // transform: 'translateX(-100%)',
+
+
                                             },
                                         },
                                     }}
@@ -183,10 +478,7 @@ export default function Header() {
 
                                         sx={{
                                             width: '100%',  // Full width for menu items
-                                            '&:hover': {
-                                                // backgroundColor: 'primary.main',
-                                                // color: 'white',
-                                            },
+                                            
                                         }}
                                     
                                         >
@@ -195,7 +487,7 @@ export default function Header() {
                                             // textAlign: "center",
                                             '&:hover': {
                                                 // backgroundColor: 'primary.main',
-                                                color: 'blue',
+                                                color: 'white',
                                             },
                                             
                                         }}/>
@@ -211,10 +503,10 @@ export default function Header() {
                                         sx={{
                                             width: '100%',  // Full width for menu items
                                             "& .MuiTypography-root": {
-                                                fontSize: "26px", // Adjust the font size as needed
+                                                // fontSize: "26px", // Adjust the font size as needed
                                             },
                                             '&:hover': {
-                                                backgroundColor: 'primary.main',
+                                                // background: "#366d06",
                                                 color: 'white',
                                             },
                                         }}
@@ -225,469 +517,192 @@ export default function Header() {
                                         </ListItemIcon> */}
                                         <ListItemText primary="Login"/>
                                     </MenuItem>
-                                    <MenuItem>
-                                    <Box 
-                                sx={{
-                                    display: "flex",
-                                    gap: "20px",
-                                    "@media(max-width: 950px)" : {
-                                        display: "block",
-                                    }
-                                }}
-                            >
-                                {auth.isAuthenticated && (
-                                    <Box>
-                                    <Button 
-                                        endIcon={<ArrowDropDownIcon />}
-                                        onClick={e => {
-                                            setShowMenu(true);
-                                            setMenuPosition(e.currentTarget)
-                                        }}
-                                        sx={{
-                                            textTransform: "none",
-                                            color: "#808080",
-                                            '&:hover': {
-                                                background: "#366d06",
-                                            }, 
-                                        
-                                        }}
-                                    >
-                                        <Avatar 
-                                            src={auth.photo}
-                                            sx={{ 
-                                                width: 30,
-                                                height: 30,
-                                                marginRight: "10px",
-                                                background: "#366d06",
-                                                fontSize: "15px",
-                                        }}>
-                                            
-                                        </Avatar>
-                                        tt at
-                                    </Button>
-                                    <Menu
-                                        anchorEl={menuPosition}
-                                        open={showProfileMenu}
-                                        
-                                        anchorOrigin={{
-                                            vertical: "bottom",
-                                            horizontal: "left",
-                                        }}
-                                        transformOrigin={{
-                                            vertical: "top",
-                                            horizontal: "right",
-                                        }}
-                                        onClose={() => {
-                                            setShowMenu(false);
-                                        
-                                        
-                                        }}
-                                        
-                                        slotProps={{
-                                            paper: {
-                                                sx: {
-                                                    maxHeight: 200,
-                                                    width: "200px",
-                                                    overflow: "auto",
-                                                    marginLeft: "90px",
-                                                },
-                                            }
-                                        }}
-                                    
-                                    
-                                    >
-                                    
-                                    <MenuItem
-                                        // onClick={() => {
-                                        // 	const api = import.meta.env
-                                        // 		.VITE_API_URL;
-                                        // 	fetch(`${api}/posts/${post._id}`, {
-                                        // 		method: "DELETE",
-                                        // 	});
-
-                                        // 	remove(post._id);
-                                        // }}
-                                        
-                                    >
-                                        <ListItemText primary="Profile" />
-                                    </MenuItem>
-                                    <MenuItem
-                                        // onClick={() => {
-                                        // }}
-                                        
-                                        
-                                    >
-                                        <ListItemText primary="Contacts" />
-                                    </MenuItem>
-                                    <MenuItem
-                                        // onClick={() => {
-                                        // }}
-                                        
-                                        
-                                    >
-                                        <ListItemText primary="Report" />
-                                    </MenuItem>
-
-                                    <MenuItem
-                                        // onClick={() => {
-                                        // }}
-                                        
-                                        
-                                    >
-                                        <ListItemText primary="Logout" />
-                                    </MenuItem>
-                                    </Menu>
+                                    {authUser && (
+                                <Box>
+                                 <Button 
+                                     endIcon={<ArrowDropDownIcon />}
+                                     onClick={e => {
+                                         setShowFirstChild(true);
+                                         setProfileMenuPosition(e.currentTarget)
+                                     }}
+                                     sx={{
+                                         textTransform: "none",
+                                         color: "#808080",
+                                        //  '&:hover': {
+                                        //      background: "#366d06",
+                                        //  }, 
+                                     
+                                     }}
+                                 >
+                                     <Avatar sx={{ 
+                                         width: 30,
+                                         height: 30,
+                                         marginRight: "10px",
+                                         background: "#366d06",
+                                         fontSize: "15px",
+                                     }}>
+                                         TA
+                                     </Avatar>
+                                     {authUser.username}
+                                 </Button>
+                                 <Menu
+                                     anchorEl={ProfileMenuPosition}
+                                     open={showFirstChild}
+                                     
+                                     anchorOrigin={{
+                                         vertical: "bottom",
+                                         horizontal: "left",
+                                     }}
+                                     transformOrigin={{
+                                         vertical: "top",
+                                         horizontal: "right",
+                                     }}
+                                     onClose={() => {
+                                         setShowFirstChild(false);
+                                     
+                                     
+                                     }}
+                                     
+                                     slotProps={{
+                                         paper: {
+                                             sx: {
+                                                 maxHeight: 200,
+                                                 width: "200px",
+                                                 overflow: "auto",
+                                                 marginLeft: "90px",
+                                             },
+                                         }
+                                     }}
+                                 
+                                 
+                                 >
+                                 
+                                 <MenuItem
+                                     onClick={() => {
+                                        navigate(`/client`)
+                                     }}
+                                     
+                                 >
+                                     <ListItemText primary="Profile" />
+                                 </MenuItem>
+                                 <MenuItem
+                                     // onClick={() => {
+                                     // }}
+                                     
+                                     
+                                 >
+                                     <ListItemText primary="Contacts" />
+                                 </MenuItem>
+                                 <MenuItem
+                                     // onClick={() => {
+                                     // }}
+                                     
+                                     
+                                 >
+                                     <ListItemText primary="Report" />
+                                 </MenuItem>
+ 
+                                 <MenuItem
+                                     onClick={() => {
+ 
+                                        setAuthUser(null);
+                                        localStorage.removeItem('token');
+                                        localStorage.removeItem('user');
+                                        navigate('/login');
+                                     }}
+                                     
+                                     
+                                 >
+                                     <ListItemText primary="Logout" />
+                                 </MenuItem>
+                                 </Menu>
                                 </Box>
-                                )}
-                                <Box sx={{
-                                    '&:hover': {
-                                        background: "#588f27",
-                                    }, 
-                                }}>
-                                    <IconButton 
-                                        onClick={e => {
-                                            setShowLanguage(true);
-                                            setMenuPosition(e.currentTarget)
-                                        }}
-                                        sx={{
-                                            color: "#f5f5dc", 
-                                        
-                                        }}
-                                    >
-                                        <LanguageIcon />
-                                        <ArrowDropDownIcon />
-                                    </IconButton>
+                            )}
 
-                                    <Menu
-                                        anchorEl={menuPosition}
-                                        open={showLanguage}
-                                        
-                                        anchorOrigin={{
-                                            vertical: "bottom",
-                                            horizontal: "left",
-                                        }}
-                                        transformOrigin={{
-                                            vertical: "top",
-                                            horizontal: "right",
-                                        }}
-                                        onClose={() => {
-                                            setShowLanguage(false);
-                                        
-                                        
-                                        }}
-                                        
-                                        slotProps={{
-                                            paper: {
-                                                sx: {
-                                                    maxHeight: 200,
-                                                    width: "200px",
-                                                    overflow: "auto",
-                                                    marginLeft: "90px",
-                                                },
-                                            }
-                                        }}
-                                    
-                                    
-                                    >
-                                    
-                                    <MenuItem
-                                        // onClick={() => {
-                                        // 	const api = import.meta.env
-                                        // 		.VITE_API_URL;
-                                        // 	fetch(`${api}/posts/${post._id}`, {
-                                        // 		method: "DELETE",
-                                        // 	});
-
-                                        // 	remove(post._id);
-                                        // }}
-                                        
-                                    >
-                                        <ListItemText primary="English" />
-                                    </MenuItem>
-                                    <MenuItem
-                                        // onClick={() => {
-                                        // }}
-                                        
-                                        
-                                    >
-                                        <ListItemText primary="Myanmar3" />
-                                    </MenuItem>
-                                    </Menu>
-                                    
-                                </Box>
+                            <Box>
+                                 <IconButton 
+                                     onClick={e => {
+                                         setShowSecondChild(true);
+                                         setLanguageMenuPosition(e.currentTarget)
+                                     }}
+                                     sx={{
+                                         color: "#f5f5dc", 
+                                     
+                                     }}
+                                 >
+                                     <LanguageIcon />
+                                     <ArrowDropDownIcon />
+                                 </IconButton>
+ 
+                                 <Menu
+                                     anchorEl={LanguageMenuPosition}
+                                     open={showSecondChild}
+                                     
+                                     anchorOrigin={{
+                                         vertical: "bottom",
+                                         horizontal: "center",
+                                     }}
+                                     transformOrigin={{
+                                         vertical: "top",
+                                         horizontal: "center",
+                                     }}
+                                     onClose={() => {
+                                         setShowSecondChild(false);
+                                     
+                                     
+                                     }}
+                                     
+                                     slotProps={{
+                                         paper: {
+                                             sx: {
+                                                 maxHeight: 200,
+                                                 width: "200px",
+                                                 overflow: "auto",
+                                                 marginLeft: "90px",
+                                             },
+                                         }
+                                     }}
+                                 
+                                 
+                                 >
+                                 
+                                 <MenuItem
+                                     // onClick={() => {
+                                     // 	const api = import.meta.env
+                                     // 		.VITE_API_URL;
+                                     // 	fetch(`${api}/posts/${post._id}`, {
+                                     // 		method: "DELETE",
+                                     // 	});
+ 
+                                     // 	remove(post._id);
+                                     // }}
+                                     
+                                 >
+                                     <ListItemText primary="English" />
+                                 </MenuItem>
+                                 <MenuItem
+                                     // onClick={() => {
+                                     // }}
+                                     
+                                     
+                                 >
+                                     <ListItemText primary="Myanmar3" />
+                                 </MenuItem>
+                                 </Menu>
+                                 
+                             </Box>
+                            </Menu>
                             </Box>
-                                    
-                                    </MenuItem>
-                                </Menu>
-                        </Box>
 
+
+                            
                     </Box>
                 </Container>
                 </Box>
-
-                
             </Box>
         </Box>
+
+        
+
     )
-    }
-        {/* <Box sx={{
-                    display: "flex",
-                    // gap: "35px",
-                    height: "60px",
-                    "@media(max-width: 950px)" : {
-                        display: "none",
-                    }
-                   
-                }}>
-                    <Box sx={{
-                        width: "120px",
-                        '&:hover': {
-                            background: "#366d06",
-                            color: "#ffffff",
-                            fontWeight: 800,
-                        }, 
-                        
-                    }}>
-                        <Link to="/submit-ticket" style={{ 
-                            textDecoration: "none", 
-                            height: "100%", 
-                            display: "flex", 
-                            justifyContent: "center", 
-                            alignItems: "center",
-                        }}>
-                            <Typography sx={{
-                                fontSize: "13px",
-                                color: "#f5f5dc", 
-                                '&:hover': {
-                                    color: "#ffffff",
-                                    fontWeight: 600,
-                                }, 
-                               
-                            }}>
-                                Submit ticket
-                            </Typography>
-                        </Link>
-                    </Box>
-
-                    <Box sx={{
-                        width: "100px",
-                        '&:hover': {
-                            background: "#366d06",
-                            color: "#ffffff",
-                            fontWeight: 800,
-                        }, 
-                        
-                    }}>
-                        <Link to="/" style={{ 
-                            textDecoration: "none", 
-                            height: "100%", 
-                            display: "flex", 
-                            justifyContent: "center", 
-                            alignItems: "center",
-                        }}>
-                            <Typography sx={{
-                                fontSize: "13px",
-                                color: "#f5f5dc", 
-                                '&:hover': {
-                                    color: "#ffffff",
-                                    fontWeight: 600,
-                                }, 
-                               
-                            }}>
-                                Login
-                            </Typography>
-                        </Link>
-                    </Box>
-
-                    
-                </Box>
-                <Box 
-                    sx={{
-                        display: "flex",
-                        gap: "20px",
-                        "@media(max-width: 950px)" : {
-                            display: "none",
-                        }
-                    }}
-                >
-                    {auth.isAuthenticated && (
-                        <Box>
-                        <Button 
-                            endIcon={<ArrowDropDownIcon />}
-                            onClick={e => {
-                                setShowMenu(true);
-                                setMenuPosition(e.currentTarget)
-                            }}
-                            sx={{
-                                textTransform: "none",
-                                color: "#808080",
-                                '&:hover': {
-                                    background: "#366d06",
-                                }, 
-                            
-                            }}
-                        >
-                            <Avatar 
-                                src={auth.photo}
-                                sx={{ 
-                                    width: 30,
-                                    height: 30,
-                                    marginRight: "10px",
-                                    background: "#366d06",
-                                    fontSize: "15px",
-                            }}>
-                                
-                            </Avatar>
-                            tt at
-                        </Button>
-                        <Menu
-                            anchorEl={menuPosition}
-                            open={showProfileMenu}
-                            
-                            anchorOrigin={{
-                                vertical: "bottom",
-                                horizontal: "left",
-                            }}
-                            transformOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            onClose={() => {
-                                setShowMenu(false);
-                            
-                            
-                            }}
-                            
-                            slotProps={{
-                                paper: {
-                                    sx: {
-                                        maxHeight: 200,
-                                        width: "200px",
-                                        overflow: "auto",
-                                        marginLeft: "90px",
-                                    },
-                                }
-                            }}
-                        
-                        
-                        >
-                        
-                        <MenuItem
-                            // onClick={() => {
-                            // 	const api = import.meta.env
-                            // 		.VITE_API_URL;
-                            // 	fetch(`${api}/posts/${post._id}`, {
-                            // 		method: "DELETE",
-                            // 	});
-
-                            // 	remove(post._id);
-                            // }}
-                            
-                        >
-                            <ListItemText primary="Profile" />
-                        </MenuItem>
-                        <MenuItem
-                            // onClick={() => {
-                            // }}
-                            
-                            
-                        >
-                            <ListItemText primary="Contacts" />
-                        </MenuItem>
-                        <MenuItem
-                            // onClick={() => {
-                            // }}
-                            
-                            
-                        >
-                            <ListItemText primary="Report" />
-                        </MenuItem>
-
-                        <MenuItem
-                            // onClick={() => {
-                            // }}
-                            
-                            
-                        >
-                            <ListItemText primary="Logout" />
-                        </MenuItem>
-                        </Menu>
-                    </Box>
-                    )}
-                    <Box sx={{
-                        '&:hover': {
-                            background: "#588f27",
-                        }, 
-                    }}>
-                        <IconButton 
-                            onClick={e => {
-                                setShowLanguage(true);
-                                setMenuPosition(e.currentTarget)
-                            }}
-                            sx={{
-                                color: "#f5f5dc", 
-                            
-                            }}
-                        >
-                            <LanguageIcon />
-                            <ArrowDropDownIcon />
-                        </IconButton>
-
-                        <Menu
-                            anchorEl={menuPosition}
-                            open={showLanguage}
-                            
-                            anchorOrigin={{
-                                vertical: "bottom",
-                                horizontal: "left",
-                            }}
-                            transformOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            onClose={() => {
-                                setShowLanguage(false);
-                            
-                            
-                            }}
-                            
-                            slotProps={{
-                                paper: {
-                                    sx: {
-                                        maxHeight: 200,
-                                        width: "200px",
-                                        overflow: "auto",
-                                        marginLeft: "90px",
-                                    },
-                                }
-                            }}
-                        
-                        
-                        >
-                        
-                        <MenuItem
-                            // onClick={() => {
-                            // 	const api = import.meta.env
-                            // 		.VITE_API_URL;
-                            // 	fetch(`${api}/posts/${post._id}`, {
-                            // 		method: "DELETE",
-                            // 	});
-
-                            // 	remove(post._id);
-                            // }}
-                            
-                        >
-                            <ListItemText primary="English" />
-                        </MenuItem>
-                        <MenuItem
-                            // onClick={() => {
-                            // }}
-                            
-                            
-                        >
-                            <ListItemText primary="Myanmar3" />
-                        </MenuItem>
-                        </Menu>
-                        
-                    </Box>
-                </Box> */}
+}
