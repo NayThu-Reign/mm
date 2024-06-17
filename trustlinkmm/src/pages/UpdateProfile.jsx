@@ -442,10 +442,16 @@ export default function UpdateProfile() {
 
                                             })
                                             const data = await user_res.json();
-                                            console.log(data);
-                                            setAuthUser(data);
+                                            // console.log(data);
+                                            // setAuthUser({...authUser, ...data});
+                                            // localStorage.setItem('user', JSON.stringify({ ...authUser, ...daata }));
                                 
-                                            if (res.status === 200) {
+                                            if (user_res.ok) {
+                                                setAuthUser((prevAuthUser) => ({
+                                                    ...prevAuthUser,
+                                                    ...data,
+                                                }));
+                                                localStorage.setItem('user', JSON.stringify({ ...authUser, ...data }));
                                                 navigate('/client/profile');
                                                 console.log('Update Profile successfully');
                                             } else {

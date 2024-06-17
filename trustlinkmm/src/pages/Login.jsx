@@ -13,6 +13,8 @@ import {
     InputLabel,
     Grid,
     Tooltip,
+    FormControlLabel,
+    Checkbox,
     
 } from "@mui/material"
 
@@ -60,6 +62,7 @@ import 'froala-editor/js/plugins.pkgd.min.js';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
 import 'froala-editor/css/froala_style.min.css';
 import 'froala-editor/css/plugins.pkgd.min.css';
+import Search from "../components/Search";
   
 
 export default function Login() {
@@ -70,6 +73,7 @@ export default function Login() {
     const [content, setContent] = useState('');
 
     const {auth, setAuth } = useAuth();
+    const checkboxRef = useRef();
 
   const handleModelChange = (newContent) => {
     setContent(newContent);
@@ -84,7 +88,73 @@ export default function Login() {
     const [category, setCategory] = useState("");
 
 	// const { setAuth, setAuthUser } = useAuth();
-	const navigate = useNavigate();
+    const [files, setFiles] = useState([]);
+    const navigate = useNavigate();
+
+    // const handleFileUpload = (uploadedFiles) => {
+    //     if (!uploadedFiles || uploadedFiles.length === 0) {
+    //         console.log("No files to upload");
+    //         return;
+    //     }
+
+    //     const fileArray = Array.from(uploadedFiles);
+    //     console.log("Files to upload:", fileArray);
+
+    //     const fileReaders = [];
+    //     const processedFiles = [];
+
+    //     fileArray.forEach(file => {
+    //         const reader = new FileReader();
+    //         fileReaders.push(reader);
+
+    //         reader.onload = (event) => {
+    //             processedFiles.push({
+    //                 name: file.name,
+    //                 data: event.target.result
+    //             });
+
+    //             if (processedFiles.length === fileArray.length) {
+    //                 console.log("Processed files:", processedFiles);
+    //                 setFiles((prevFiles) => [...prevFiles, ...processedFiles]);
+    //             }
+    //         };
+
+    //         reader.readAsDataURL(file);
+    //     });
+    // };
+
+
+    const handleFileUpload = (uploadedFiles) => {
+        if (!uploadedFiles || uploadedFiles.length === 0) {
+            console.log("No files to upload");
+            return;
+        }
+    
+        const fileArray = Array.from(uploadedFiles);
+        console.log("Files to upload:", fileArray);
+    
+        const fileReaders = [];
+        const processedFiles = [];
+    
+        fileArray.forEach(file => {
+            const reader = new FileReader();
+            fileReaders.push(reader);
+    
+            reader.onload = (event) => {
+                processedFiles.push({
+                    name: file.name,
+                    data: event.target.result
+                });
+    
+                if (processedFiles.length === fileArray.length) {
+                    console.log("Processed files:", processedFiles);
+                    setFiles((prevFiles) => [...prevFiles, ...processedFiles]);
+                }
+            };
+    
+            reader.readAsDataURL(file);
+        });
+    };
 
 	const [hasError, setHasError] = useState(false);
 	const [errorMsessage, setErrorMessage] = useState(10);
@@ -96,16 +166,7 @@ export default function Login() {
 
       const [selectedFiles, setSelectedFiles] = useState([]);
 
-      const handleFileUpload = (files) => {
-        const fileArray = Array.from(files);
-        setSelectedFiles([...selectedFiles, ...fileArray]);
-    
-        return new Promise((resolve) => {
-          const link = URL.createObjectURL(files[0]);
-          resolve({ link });
-        });
-      };
-
+     
 
      
 
@@ -229,6 +290,7 @@ export default function Login() {
                                             e.preventDefault();
                                             const email = emailRef.current.value;
                                             const password = passwordRef.current.value;
+                                            const checkbox = checkboxRef.current.value;
 
                                             if (!email || !password) {
                                                 setHasError(true);
@@ -324,6 +386,17 @@ export default function Login() {
                                             sx={{ mb: 2 }}
                                             inputRef={passwordRef}
                                         />
+                                         <FormControlLabel
+                                            control={<Checkbox inputRef={checkboxRef} sx={{
+                                                '&.Mui-checked': {
+                                                color: "green",
+                                                // '& + .MuiFormControlLabel-label': {
+                                                // backgroundColor: '#d1e7dd', // Change this to your desired color
+                                                // },
+                                            },
+                                            }}/>}
+                                            label="Accept Terms and Conditions"
+                                        />
                                          {/* <Grid container alignItems="center" sx={{ mb: 2 }}>
                                             <InputLabel id="category-label" sx={{ marginRight: 1 }}>Category</InputLabel>
                                             <FormControl fullWidth>
@@ -381,20 +454,26 @@ export default function Login() {
                                             H6: 'Heading 6'
                                         },
                                         fontSize: ['8', '10', '12', '14', '16', '18', '20', '24', '30', '36', '48', '60', '72'],
-                                        events: {
-                                            'image.beforeUpload': function (files) {
-                                              handleFileUpload(files);
-                                              return false; // Stop default upload
-                                            },
-                                            'file.beforeUpload': function (files) {
-                                              handleFileUpload(files);
-                                              return false; // Stop default upload
-                                            }
-                                          }
+                                         events: {
+                                                    'file.beforeUpload': function (files) {
+                                                        console.log("File before upload:", files);
+                                                        handleFileUpload(files);
+                                                        return false; // Stop default upload
+                                                    }
+                                                }
                                     }}
                                     model={editorContent}
                                     onModelChange={setEditorContent}
                                 />
+
+                                <div>
+                                                <h4>Uploaded Files:</h4>
+                                                <ul>
+                                                    {files.map((file, index) => (
+                                                        <li key={index}>{file.name}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
 
                                     
 
@@ -481,6 +560,8 @@ export default function Login() {
 
                            </Box>
                     </Container>
+
+                    <Search />
                 </Box>
 			</Box>
 

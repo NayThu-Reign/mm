@@ -219,6 +219,10 @@ export default function SubmitTicket() {
                                         const contactNumber = contactNumberRef.current.value;
                                         const imageVerification = imageVerificationRef.current.value;
 
+                                        const description = editorContent;
+        const payload = { title, description, category, files };
+
+
                                         if ( !firstName || !lastName || !email || !userName || !password || !confirmPassword || !contactNumber || imageVerification) {
                                             setHasError(true);
                                             setErrorMessage("Invalid register details");
@@ -233,7 +237,7 @@ export default function SubmitTicket() {
                                                   headers: {
                                                     "Content-Type": "application/json",
                                                   },
-                                                  body: JSON.stringify({ title, description, category }),
+                                                  body: JSON.stringify(payload),
                                                 });
                                           
                                                 const result = await response.json();
