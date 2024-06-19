@@ -17,6 +17,7 @@ import SubmitTicket from './pages/SubmitTicket'
 import TicketDetail from './pages/TicketDetail'
 import StatusReport from './pages/StatusReport'
 import MainDropdown from './pages/MainDropdown'
+import Inbox from './pages/Inbox'
 
 const router = createBrowserRouter([
   {
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
         path: "/drop-down",
         element: <MainDropdown />
       },
+      {
+        path: "/inbox",
+        element: <Inbox />
+      }
       // {
       //   path: "/view-tickets",
       //   element: <ViewTickets />

@@ -12,38 +12,101 @@ import {
     FormControl,
     InputLabel,
     Grid,
+    List,
+    ListItem,
 } from "@mui/material"
 
 import {
     Search as SearchIcon,
+    Refresh as RefreshIcon,
+    Clear as ClearIcon,
 } from "@mui/icons-material"
 
 import { Link, useNavigate } from "react-router-dom"
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+
+import FroalaEditor from 'react-froala-wysiwyg';
+import 'froala-editor/js/plugins.pkgd.min.js';
+import 'froala-editor/css/froala_editor.pkgd.min.css';
+import 'froala-editor/css/froala_style.min.css';
+import 'froala-editor/css/plugins.pkgd.min.css';
+import { useAuth } from "../providers/AuthProvider";
+  
 
 export default function SubmitTicket() {
 	const navigate = useNavigate();
+    const {authUser, setAuthUser} = useAuth();
 
     const firstNameRef = useRef();
     const lastNameRef = useRef();
     const emailRef = useRef();
-    const userNameRef = useRef();
-	const passwordRef = useRef();
-	const confirmPasswordRef = useRef();
-    const contactNumberRef = useRef();
+    const departmentRef = useRef();
+	const priorityRef = useRef();
+	const ticketCategoryRef = useRef();
+    const titleRef = useRef();
+    // const messageRef = useRef();
     const imageVerificationRef = useRef();
+
+    const froalaEditorRef = useRef(null);
 
     const [hasError, setHasError] = useState(false);
 	const [errorMsessage, setErrorMessage] = useState("");
 
-    const [ departmentCategories, setDepartmentCategories ] = useState(10);
-    const [ ticketCategories, setTicketCategories ] = useState(10);
-    const [ priorityCategories, setPriorityCategories ] = useState(10);
+    const [ departmentCategories, setDepartmentCategories ] = useState([]);
+    // const [ ticketCategories, setTicketCategories ] = useState([]);
+    const [ ticketCategories, setTicketCategories ] = useState([]);
+    const [ priorityCategories, setPriorityCategories ] = useState("Critical");
+    
+
+    const [ selectedDepartmentCategory, setSelectedDepartmentCategory ] = useState('');
+    const [ selectedTicketCategory, setSelectedTicketCategory ] = useState('');
+
+    const [files, setFiles] = useState([]);
+
+    const handleFileUpload = (uploadedFiles) => {
+        if (!uploadedFiles || uploadedFiles.length === 0) {
+            console.log("No files to upload");
+            return;
+        }
+    
+        const fileArray = Array.from(uploadedFiles);
+        console.log("Files to upload:", fileArray);
+    
+        const fileReaders = [];
+        const processedFiles = [];
+    
+        fileArray.forEach(file => {
+            const reader = new FileReader();
+            fileReaders.push(reader);
+    
+            reader.onload = (event) => {
+                processedFiles.push({
+                    name: file.name,
+                    data: event.target.result
+                });
+    
+                if (processedFiles.length === fileArray.length) {
+                    console.log("Processed files:", processedFiles);
+                    setFiles((prevFiles) => [...prevFiles, ...processedFiles]);
+                }
+            };
+    
+            reader.readAsDataURL(file);
+        });
+    };
+
+    const handleDelete = (fileName) => {
+        const updatedFiles = files.filter(file => file.name !== fileName);
+        setFiles(updatedFiles);
+    };
+
+    
 
 	// const { setAuth, setAuthUser } = useAuth();
 
     const handleDepartmentCategoriesChange = (event) => {
-        setDepartmentCategories(event.target.value);
+        setSelectedDepartmentCategory(event.target.value);
     };
 
     const handlePriorityCategoriesChange = (event) => {
@@ -51,11 +114,362 @@ export default function SubmitTicket() {
     };
 
     const handleTicketCategoriesChange = (event) => {
-        setTicketCategories(event.target.value);
+        setSelectedTicketCategory(event.target.value);
+      };
+    
+
+      const [verificationInput, setVerificationInput] = useState('');
+      const [verificationError, setVerificationError] = useState('');
+
+      const generateRandomCaptcha = () => {
+        const randomString = Math.random().toString(36).substring(2, 8);
+        return `https://via.placeholder.com/150x50?text=${randomString}`;
     };
+
+    const [captchaImage, setCaptchaImage] = useState(generateRandomCaptcha());
+
+    const handleRefreshClick = () => {
+        setCaptchaImage(generateRandomCaptcha());
+        setVerificationInput(''); 
+        setVerificationError(''); 
+    };
+
+    const initialValue = [
+        {
+          type: 'paragraph',
+          children: [{ text: 'A line of text in a paragraph.' }],
+        },
+      ];
+
+      const [value, setValue] = useState(initialValue);
+
+      const [editorContent, setEditorContent] = useState('');
+
+
+    // const [content, setContent] = useState('');
+    // const [formData, setFormData] = useState({
+    //     title: '',
+    //     description: '',
+    //     status: 'Pending',
+    //     priority: 'Low',
+    //     categoryId: '',
+    //     assigneeId: null,
+    //     startDate: null,
+    //     endDate: null,
+    //     issuerId: null,
+    //     departmentId: '',
+    //     firstName: '',
+    //     lastName: '',
+    //     email: ''
+    // });
+
+    const fetchDepartmentCategories = async () => {
+        try {
+        //   const token = localStorage.getItem('token');
+            // const user = JSON.parse(localStorage.getItem('user'));
+
+          const api = import.meta.env.VITE_API_URL;
+          const departments_res = await fetch(`${api}/api/departments`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            //   'Authorization': `Bearer ${token, user}`
+            },
+          });
+          if (!departments_res.ok) {
+            if (departments_res.status === 401) {
+              throw new Error('Unauthorized: Please login to access department categories');
+            } else {
+              throw new Error('Failed to fetch department categories');
+            }
+          }
+          const departments_result = await departments_res.json();
+          const department_categories = departments_result.records; 
+          setDepartmentCategories(department_categories);
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
+      };
+      
+      
+
+    const fetchTicketCategories = async () => {
+        try {
+          const api = import.meta.env.VITE_API_URL;
+          const tickets_res = await fetch(`${api}/api/tickets/categories`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          if (!tickets_res.ok) {
+            throw new Error('Failed to fetch data');
+          }
+          const tickets_result = await tickets_res.json();
+        //   console.log('API response:', tickets_result); // Log the response to see its structure
+          const categories = tickets_result.records; // Extract the records array
+          if (!Array.isArray(categories)) {
+            throw new Error('Invalid data format');
+          }
+          setTicketCategories(categories);
+        } catch (error) {
+          console.error(error);
+          setError(error.message);
+        }
+      };
+    //   const getTextContent = () => {
+    //     const description = froalaEditorRef.current.editor.html.get();
+
+    //     // Create a temporary element
+    //     const tempElement = document.createElement('div');
+    //     // Set its inner HTML to the content you want to extract
+    //     tempElement.innerHTML = description;
+    //     // Get the text content
+    //     const textContent = tempElement.textContent || tempElement.innerText;
+
+    //     return textContent;
+    // };
+
+    const getTextContent = () => {
+        const descriptionHtml = froalaEditorRef.current.editor.html.get();
+    
+        // Create a temporary div element to manipulate the HTML
+        const tempElement = document.createElement('div');
+        tempElement.innerHTML = descriptionHtml;
+    
+        // Get plain text content without HTML tags
+        const textContent = tempElement.innerText.trim();
+    
+        // Get image sources as base64 data URLs
+        const imageElements = tempElement.querySelectorAll('img');
+        const imageSources = Array.from(imageElements).map(img => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const image = new Image();
+            image.src = img.src;
+    
+            // Draw image onto canvas to get base64 data URL
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.drawImage(image, 0, 0);
+            return canvas.toDataURL('image/png');
+        });
+    
+        // Combine text content and image sources into a single object
+        const description = {
+            textContent: textContent,
+            imageSources: imageSources
+        };
+    
+        return description;
+    };
+
+    // const getTextContent = () => {
+    //     const descriptionHtml = froalaEditorRef.current.editor.html.get();
+    
+    //     // Create a temporary div element to manipulate the HTML
+    //     const tempElement = document.createElement('div');
+    //     tempElement.innerHTML = descriptionHtml;
+    
+    //     // Get plain text content without HTML tags
+    //     const textContent = tempElement.innerText.trim();
+    
+    //     // Get image sources as base64 data URLs
+    //     const imageElements = tempElement.querySelectorAll('img');
+    //     const imageBase64Array = [];
+    
+    //     imageElements.forEach(img => {
+    //         const canvas = document.createElement('canvas');
+    //         const ctx = canvas.getContext('2d');
+    //         const image = new Image();
+    //         image.src = img.src;
+    
+    //         // Ensure the image is loaded before manipulating it
+    //         image.onload = () => {
+    //             canvas.width = image.width;
+    //             canvas.height = image.height;
+    //             ctx.drawImage(image, 0, 0);
+    //             const base64String = canvas.toDataURL('image/png');
+    //             imageBase64Array.push(base64String);
+    //         };
+    //     });
+    
+    //     // Return an object containing both text content and image sources
+    //     return {
+    //         textContent: textContent,
+    //         imageSources: imageBase64Array,
+    //     };
+    // };
+    
+    
+
+    // const getTextContent = () => {
+    //     // Get the HTML content from Froala Editor
+    //     const descriptionHtml = froalaEditorRef.current.editor.html.get();
+    
+    //     // Create a temporary div element to manipulate the content
+    //     const tempElement = document.createElement('div');
+    //     tempElement.innerHTML = descriptionHtml;
+    
+    //     // Extract plain text content
+    //     const textContent = tempElement.innerText.trim(); // Use innerText to get plain text without HTML tags
+    
+    //     // Extract base64 image sources
+    //     const imageElements = tempElement.querySelectorAll('img');
+    //     const imageSources = Array.from(imageElements).map(img => img.src);
+    
+    //     // Construct an object to represent both text and image sources
+    //     const content = {
+    //         textContent,
+    //         imageSources
+    //     };
+    
+    //     return content;
+    // };
+
+    // const getTextContent = () => {
+    //     const descriptionHtml = froalaEditorRef.current.editor.html.get();
+    //     const tempElement = document.createElement('div');
+    //     tempElement.innerHTML = descriptionHtml;
+    
+    //     const textContent = tempElement.innerText.trim();
+    //     const imageElements = tempElement.querySelectorAll('img');
+    //     const imageSources = Array.from(imageElements).map(img => img.src);
+    
+    //     // Return combined object
+    //     return {
+    //         textContent: textContent,
+    //         imageSources: imageSources
+    //     };
+    // };
+
+
+    //   const getTextContent = () => {
+    //     const description = froalaEditorRef.current.editor.html.get();
+
+    //     // Create a temporary element
+    //     const tempElement = document.createElement('div');
+    //     // Set its inner HTML to the content you want to extract
+    //     tempElement.innerHTML = description;
+    //     // Get the text content
+    //     const textContent = tempElement.textContent || tempElement.innerText;
+
+    //     return textContent;
+    // };
+
+    // const getTextContent = () => {
+    //     const descriptionHtml = froalaEditorRef.current.editor.html.get();
+    //     const tempElement = document.createElement('div');
+    //     tempElement.innerHTML = descriptionHtml;
+    
+    //     const textContent = tempElement.innerText || tempElement.textContent
+    //     const imageElements = tempElement.querySelectorAll('img');
+    //     const imageSources = Array.from(imageElements).map(img => img.src);
+    
+    //     // Return combined object
+    //     return {
+    //         textContent: textContent,
+    //         imageSources: imageSources
+    //     };
+    // };
+
+    // const getTextContent = async () => {
+    //     const descriptionHtml = froalaEditorRef.current.editor.html.get();
+    //     const tempElement = document.createElement('div');
+    //     tempElement.innerHTML = descriptionHtml;
+    
+    //     // Convert images to base64 strings and replace src attributes with base64 strings
+    //     const imageElements = tempElement.querySelectorAll('img');
+    
+    //     // Convert each image to base64 and replace src attribute with base64 string
+    //     await Promise.all(Array.from(imageElements).map(async (img) => {
+    //         const canvas = document.createElement('canvas');
+    //         const ctx = canvas.getContext('2d');
+    //         const image = new Image();
+    //         image.src = img.src;
+    
+    //         // Wait for image to load
+    //         await new Promise((resolve) => {
+    //             image.onload = () => resolve();
+    //         });
+    
+    //         canvas.width = image.width;
+    //         canvas.height = image.height;
+    //         ctx.drawImage(image, 0, 0);
+    //         const base64String = canvas.toDataURL('image/png');
+    //         img.src = base64String;
+    //     }));
+    
+    //     // Get the plain text content
+    //     const textContent = tempElement.textContent || tempElement.innerText;
+    
+    //     // Return the plain text content
+    //     return textContent.trim();
+    // };
+    
+    
+    // const getTextContent = () => {
+    //     const descriptionHtml = froalaEditorRef.current.editor.html.get();
+    //     const tempElement = document.createElement('div');
+    //     tempElement.innerHTML = descriptionHtml;
+    
+    //     // Extract text content without HTML tags
+    //     const textContent = tempElement.innerText.trim();
+    
+    //     // Convert images to base64 strings
+    //     const imageElements = tempElement.querySelectorAll('img');
+    //     const imageSources = Array.from(imageElements).map(img => {
+    //         const canvas = document.createElement('canvas');
+    //         const ctx = canvas.getContext('2d');
+    //         const image = new Image();
+    //         image.src = img.src;
+            
+    //         // Draw the image onto the canvas to get base64 data URL
+    //         canvas.width = image.width;
+    //         canvas.height = image.height;
+    //         ctx.drawImage(image, 0, 0);
+    //         return canvas.toDataURL('image/png');
+    //     });
+    
+    //     return {
+    //         textContent: textContent,
+    //         imageSources: imageSources
+    //     };
+    // };
+    
+    
+    
+   
+    const getProcessedContent = () => {
+        const description = froalaEditorRef.current.editor.html.get();
+
+        // Create a temporary element
+        const tempElement = document.createElement('div');
+        // Set its inner HTML to the content you want to extract
+        tempElement.innerHTML = description;
+
+        // Process the content to remove tags but retain images
+        const content = Array.from(tempElement.childNodes).map(node => {
+            if (node.nodeName === 'IMG') {
+                return node.outerHTML; // Keep image tags with base64 data
+            } else {
+                return node.textContent || node.innerText; // Extract text content
+            }
+        }).join('');
+
+        return content;
+    };
+   
+    useEffect(() => {
+        fetchDepartmentCategories();
+        fetchTicketCategories();
+      }, []);
+     
 
 
     return (
+        
         <Box>
             <Box sx={{
                 width: "100%",
@@ -210,51 +624,93 @@ export default function SubmitTicket() {
                                 <form
                                      onSubmit={e => {
                                         e.preventDefault();
-                                        const firstName = firstNameRef.current.value;
-                                        const lastName = lastNameRef.current.value;
-                                        const email = emailRef.current.value;
-                                        const userName = userNameRef.current.value;
-                                        const password = passwordRef.current.value;
-                                        const confirmPassword = passwordRef.current.value;
-                                        const contactNumber = contactNumberRef.current.value;
+                                        const firstName = firstNameRef.current ? firstNameRef.current.value : '';
+                                        const lastName = lastNameRef.current ? lastNameRef.current.value : '';
+                                        const email = emailRef.current ? emailRef.current.value : '';
+                                        const department = departmentRef.current.value;
+                                        const priority = priorityRef.current.value;
+                                        const ticketCategory = ticketCategoryRef.current.value;
+                                        const title = titleRef.current.value;
+                                        const description = getTextContent();
+
+                                        // const { textContent, imageSources } = getTextContent();
+                                        // const description = getProcessedContent();
+                                        // const description = froalaEditorRef.current.editor.html.get();
+                                        // const description = editorContent;
                                         const imageVerification = imageVerificationRef.current.value;
 
-                                        const description = editorContent;
-        const payload = { title, description, category, files };
+                                        // const { textContent, imageSources } = getTextContent();
 
+                                       
+                                        console.log('title', title);
+                                        // console.log('Description:', description);
 
-                                        if ( !firstName || !lastName || !email || !userName || !password || !confirmPassword || !contactNumber || imageVerification) {
-                                            setHasError(true);
-                                            setErrorMessage("Invalid register details");
-                                            return false;
+                                        if (!authUser) {
+                                            // Validation for unauthenticated users
+                                            if (!firstName || !lastName || !email || !department || !ticketCategory || !title || !imageVerification) {
+                                                setHasError(true);
+                                                setErrorMessage("Invalid submit tickets details");
+                                                return false;
+                                            }
+                                        } else {
+                                            // Validation for authenticated users
+                                            if (!department || !priority || !ticketCategory || !title || !imageVerification ) {
+                                                setHasError(true);
+                                                setErrorMessage("Invalid submit tickets details");
+                                                return false;
+                                            }
                                         }
 
+                                        const captchaText = captchaImage.substring(captchaImage.lastIndexOf('=') + 1);
+                                        if (imageVerification !== captchaText) {
+                                            setVerificationError('Incorrect verification code');
+                                            return;
+                                        }
 
-                                        async() => {
+                                        (async () => {
                                             try {
-                                                const response = await fetch("http://localhost:3000/api/tickets", {
-                                                  method: "POST",
-                                                  headers: {
-                                                    "Content-Type": "application/json",
-                                                  },
-                                                  body: JSON.stringify(payload),
+                                                const token = localStorage.getItem('token');
+
+                                                const api = import.meta.env.VITE_API_URL;
+                                                const res = await fetch(`${api}/api/tickets/submitTicket`, {
+                                                    method: 'POST',
+                                                    body: JSON.stringify({ 
+                                                        title,
+                                                        description: JSON.stringify(description),
+                                                        "categoryId": ticketCategory,
+                                                        "issuerId": authUser ? authUser.id : '',
+                                                        "departmentId": department,
+                                                        priority: priority,
+                                                        firstName : firstName ? firstName : '',
+                                                        lastName : lastName ? lastName : '',
+                                                        email : email ? email : '',
+                                                        // "status": "Closed",
+                                                    
+                                                    }),
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'Authorization': `Bearer ${token}`,
+
+                                                    },
                                                 });
-                                          
-                                                const result = await response.json();
-                                          
-                                                if (response.ok) {
-                                                  setSuccess("Ticket submitted successfully!");
-                                                  setTitle("");
-                                                  setDescription("");
-                                                  setCategory("");
-                                                  navigate("/")
+                                    
+                                                const data = await res.json();
+                                                console.log(data);
+                                    
+                                                if (res.status === 200) {
+                                                    // navigate('/tickets/view-tickets');
+                                                    console.log('Ticket submitted successfully');
                                                 } else {
-                                                  setError(result.message || "An error occurred");
+                                                    console.error('Error submitting ticket:', data.error ? data.error.details : 'Unknown error');
+                                                    setHasError(true);
+                                                    setErrorMessage(data.error ? data.error.details : 'Unknown error');
                                                 }
-                                              } catch (error) {
-                                                setError("An error occurred while submitting the ticket");
-                                              }
-                                        }
+                                            } catch (error) {
+                                                console.error('Error submitting ticket:', error.message);
+                                                setHasError(true);
+                                                setErrorMessage("Failed to submit ticket");
+                                            }
+                                        })();
 
                                 
                                 }}>
@@ -317,22 +773,25 @@ export default function SubmitTicket() {
                                                 width: "100%",
                                             }
                                         }}>
-                                        <FormControl variant="outlined" sx={{ minWidth: 120 }}>
-  <InputLabel>Department</InputLabel>
-  <Select
-    value={selectedDepartment}
-    onChange={handleDepartmentChange}
-    label="Department"
-  >
-    {selectedDepartment === '' && <MenuItem value="">IT (Placeholder)</MenuItem>}
-    {departments.map(department => (
-      <MenuItem key={department.id} value={department.name}>{department.name}</MenuItem>
-    ))}
-  </Select>
-</FormControl>
+                                        <FormControl fullWidth>
+                                            <Select
+                                                labelId="category-label"
+                                                value={ selectedDepartmentCategory }
+                                                onChange={handleDepartmentCategoriesChange}
+                                                inputRef={departmentRef}
+                                            >
+                                                {Array.isArray(departmentCategories) && departmentCategories.map((department) => (
+                                                        <MenuItem key={department.id} value={Number(department.id)}>
+                                                            {department.departmentName}
+                                                        </MenuItem>
+                                                    ))}
+                                            </Select>
+                                        </FormControl>
                                         </Box>
                                     </Box>
-                                    <Box sx={{
+                                   { !authUser && (
+                                        <>
+                                                     <Box sx={{
                                         display: "flex",
                                         // justifyContent: "center",
                                         alignItems: "center",
@@ -369,6 +828,7 @@ export default function SubmitTicket() {
                                             <TextField
                                                 // label="Email"
                                                 fullWidth
+                                                type="text"
                                                 sx={{ 
                                                     // width: "750px",
                                                     // height: "100%",
@@ -383,7 +843,7 @@ export default function SubmitTicket() {
                                                         },
                                                     },
                                                 }}
-                                                inputRef={emailRef}
+                                                inputRef={firstNameRef}
                                             />
                                         </Box>
                                     </Box>
@@ -426,6 +886,7 @@ export default function SubmitTicket() {
                                             <TextField
                                                 // label="Email"
                                                 fullWidth
+                                                type="text"
                                                 sx={{ 
                                                     // width: "750px",
                                                     // height: "100%",
@@ -440,7 +901,7 @@ export default function SubmitTicket() {
                                                         },
                                                     },
                                                 }}
-                                                inputRef={emailRef}
+                                                inputRef={lastNameRef}
                                             />
                                         </Box>
                                     </Box>
@@ -501,6 +962,10 @@ export default function SubmitTicket() {
                                             />
                                         </Box>
                                     </Box>
+                                        
+                                        
+                                        </>
+                                   )}
                                     <Box sx={{
                                         display: "flex",
                                         // justifyContent: "center",
@@ -541,11 +1006,12 @@ export default function SubmitTicket() {
                                                 labelId="category-label"
                                                 value={ priorityCategories }
                                                 onChange={handlePriorityCategoriesChange}
+                                                inputRef={priorityRef}
                                             >
-                                                <MenuItem value={10}>Critical</MenuItem>
-                                                <MenuItem value={20}>Moderate</MenuItem>
-                                                <MenuItem value={30}>Low</MenuItem>
-                                                <MenuItem value={30}>Medium</MenuItem>
+                                                <MenuItem value="Critical">Critical</MenuItem>
+                                                <MenuItem value="Moderate">Moderate</MenuItem>
+                                                <MenuItem value="Low">Low</MenuItem>
+                                                <MenuItem value="Medium">Medium</MenuItem>
                                             </Select>
                                             </FormControl>
                                         </Box>
@@ -588,14 +1054,26 @@ export default function SubmitTicket() {
                                         <FormControl fullWidth>
                                             <Select
                                                 labelId="category-label"
-                                                value={ ticketCategories }
+                                                value={ selectedTicketCategory  }
                                                 onChange={handleTicketCategoriesChange}
+                                                inputRef={ticketCategoryRef}
                                             >
-                                                <MenuItem value={10}>Select</MenuItem>
-                                                <MenuItem value={20}>PC</MenuItem>
-                                                <MenuItem value={30}>Power Supply</MenuItem>
-                                                <MenuItem value={40}>Touch Screen</MenuItem>
-                                                <MenuItem value={50}>HDD</MenuItem>
+                                                    {Array.isArray(ticketCategories) && ticketCategories.map((ticket) => (
+                                                        <MenuItem key={ticket.id} value={Number(ticket.id)}>
+                                                            {ticket.categoryName}
+                                                        </MenuItem>
+                                                    ))}
+
+                                                        {/* {ticketCategories.map((ticket) => (
+                                                                    <MenuItem key={ticket.id} value={ticket.id}>
+                                                                        {ticket.name}
+                                                                    </MenuItem>
+                                                        ))} */}
+
+                                                {/* <MenuItem value={10}>Critical</MenuItem>
+                                                <MenuItem value={20}>Moderate</MenuItem>
+                                                <MenuItem value={30}>Low</MenuItem>
+                                                <MenuItem value={30}>Medium</MenuItem> */}
                                             </Select>
                                             </FormControl>
                                         </Box>
@@ -638,6 +1116,7 @@ export default function SubmitTicket() {
                                         }}>
                                             <TextField
                                                 // label="Email"
+                                                type="text"
                                                 fullWidth
                                                 sx={{ 
                                                     // width: "750px",
@@ -653,7 +1132,7 @@ export default function SubmitTicket() {
                                                         },
                                                     },
                                                 }}
-                                                inputRef={emailRef}
+                                                inputRef={titleRef}
                                             />
                                         </Box>
                                     </Box>
@@ -684,7 +1163,7 @@ export default function SubmitTicket() {
                                                 justifyContent: "flex-start",
                                             }
                                         }}>                                           
-                                            <label style={{ color: "#808080", fontSize: "15px" }}>Password</label>
+                                            <label style={{ color: "#808080", fontSize: "15px" }}>Message </label>
                                         </Box>
                                         <Box sx={{ 
                                             width: "750px", 
@@ -693,27 +1172,76 @@ export default function SubmitTicket() {
                                             }
                                             
                                         }}>
-                                            <TextField
-                                                // label="Email"
-                                                fullWidth
-                                                multiline
-                                                rows={6}
-                                                sx={{ 
-                                                    // width: "750px",
-                                                    // height: "500%",
-                                                    // mb: 2,
-                                                    // border: "1px solid",
-                                                    display: "flex",
-                                                    
-                                                    backgroundColor: 'white',
-                                                    '& .MuiOutlinedInput-root': {
-                                                        '&.Mui-focused fieldset': {
-                                                        borderColor: "black",
-                                                        },
+                                              <FroalaEditor
+                                                tag='textarea'
+                                                config={{
+                                                    placeholderText: 'Write your message...',
+                                                    charCounterCount: false,
+                                                    toolbarButtons: [
+                                                        'bold', 'italic', 'underline', 'strikeThrough', 
+                                                        'insertLink', 'insertImage', 'insertFile', 'formatOL', 'formatUL', 
+                                                        'quote', 'html', 'paragraphFormat', 'fontSize'],
+                                                    paragraphFormat: {
+                                                        N: 'Normal',
+                                                        H1: 'Heading 1',
+                                                        H2: 'Heading 2',
+                                                        H3: 'Heading 3',
+                                                        H4: 'Heading 4',
+                                                        H5: 'Heading 5',
+                                                        H6: 'Heading 6'
                                                     },
+                                                    fontSize: ['8', '10', '12', '14', '16', '18', '20', '24', '30', '36', '48', '60', '72'],
+                                                    imageUpload: true,
+                                                    imageUploadURL: false,
+                                                    imageUploadToS3: false,
+                                                    imageAllowedTypes: ['jpeg', 'jpg', 'png'],
+                                                    events: {
+                                                        // 'paste.before': function (e, editor, html) {
+                                                        //     // Strip all HTML tags to handle plain text
+                                                        //     const plainText = (new DOMParser()).parseFromString(html, 'text/html').body.textContent || '';
+                                                        //     editor.html.insert(plainText, true);
+                                                        //     return false; // Prevent default paste behavior
+                                                        // },
+                                                        'file.beforeUpload': function (files) {
+                                                            console.log("File before upload:", files);
+                                                            handleFileUpload(files);
+                                                            return false; // Stop default upload
+                                                        },
+                                                        'image.beforeUpload': function (files) {
+                                                            if (files.length) {
+                                                                const reader = new FileReader();
+                                                                reader.onload = function (e) {
+                                                                    const result = e.target.result;
+                                                                    froalaEditorRef.current.editor.image.insert(result, null, null, froalaEditorRef.current.editor.image.get());
+                                                                };
+                                                                reader.readAsDataURL(files[0]);
+                                                            }
+                                                            return false; // Prevent default upload
+                                                        }
+                                                    }
                                                 }}
-                                                inputRef={emailRef}
+                                                model={editorContent}
+                                                onModelChange={setEditorContent}
+                                                ref={froalaEditorRef}
+                                                // style={{ height: '800px' }}
+                                                
                                             />
+                                                <Box sx={{
+                                                    marginTop: "10px",
+                                                }}>
+                                                    <Typography>Uploaded Files:</Typography>
+                                                    <List>
+                                                        {files.map((file, index) => (
+                                                            <ListItem key={index}>
+                                                                {file.name} 
+                                                                <IconButton onClick={() => handleDelete(file.name)}>
+                                                                    <ClearIcon />
+                                                                </IconButton>
+                                                            
+                                                            </ListItem>
+                                                        ))}
+                                                    </List>
+                                                </Box>
                                         </Box>
                                     </Box>
                                     <Box sx={{
@@ -752,9 +1280,17 @@ export default function SubmitTicket() {
                                             }
                                             
                                         }}>
+                                            <img src={captchaImage} alt="captcha" style={{ marginRight: '10px'}}/>
+                                            <IconButton onClick={handleRefreshClick}>
+                                                <RefreshIcon />
+                                            </IconButton>
                                             <TextField
                                                 // label="Email"
                                                 fullWidth
+                                                // type="text"
+                                                required
+                                                error={!!verificationError}
+                                                helperText={verificationError}
                                                 sx={{ 
                                                     // width: "750px",
                                                     // height: "100%",
@@ -769,7 +1305,9 @@ export default function SubmitTicket() {
                                                         },
                                                     },
                                                 }}
-                                                inputRef={emailRef}
+                                                inputRef={imageVerificationRef}
+                                                value={verificationInput}
+                                                onChange={(e) => setVerificationInput(e.target.value)}
                                             />
                                         </Box>
                                     </Box>
@@ -796,6 +1334,7 @@ export default function SubmitTicket() {
                                                 background: "#74b683",
                                                 textTransform: 'none',
                                                 fontSize: "15px",
+                                                color: "#ffffff",
                                                 '&:hover': {
                                                     backgroundColor: "#74b683", 
                                                     
@@ -806,7 +1345,7 @@ export default function SubmitTicket() {
                                             }}    
                                             
                                         >
-                                            Register
+                                            Submit
                                         </Button>
                                     </Box>
 
